@@ -12,6 +12,7 @@ find_package(tf2_ros REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(easynav_sensors REQUIRED)
 find_package(easynav_simple_common REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(yaets REQUIRED)
@@ -31,6 +32,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   pluginlib::pluginlib
   ament_index_cpp::ament_index_cpp
   easynav_simple_common::easynav_simple_common
+  easynav_sensors::easynav_sensors
   yaets::yaets
   ${nav_msgs_TARGETS}
   ${std_srvs_TARGETS}

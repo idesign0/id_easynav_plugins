@@ -17,6 +17,7 @@
   <depend>pluginlib</depend>
   <depend>nav_msgs</depend>
   <depend>ament_index_cpp</depend>
+  <depend>easynav_sensors</depend>
   <depend>easynav_simple_common</depend>
   <depend>std_srvs</depend>
   <depend>yaets</depend>
@@ -24,7 +25,6 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
   <test_depend>ament_cmake_gtest</test_depend>
-  <test_depend>easynav_sensors</test_depend>
   <test_depend>rclcpp</test_depend>
   <test_depend>rclcpp_lifecycle</test_depend>
 
