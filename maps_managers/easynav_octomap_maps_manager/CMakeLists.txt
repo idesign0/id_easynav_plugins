@@ -42,6 +42,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${GRAPHICSMAGICKCPP_INCLUDE_DIRS}>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
   ${PCL_INCLUDE_DIRS}
+  ${pcl_conversions_INCLUDE_DIRS}
   ${OCTOMAP_INCLUDE_DIRS}
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC
