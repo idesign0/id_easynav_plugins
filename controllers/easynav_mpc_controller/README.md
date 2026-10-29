@@ -11,8 +11,13 @@ A Model Predictive Controller (MPC) implementation for Easy Navigation.
 - **Maintainers:** Juan S. Cely G. <juanscelyg@gmail.com>
 
 ## Supported ROS 2 Distributions
+
 | Distribution | Status |
 |---|---|
+| humble | ![humble](https://img.shields.io/badge/humble-supported-brightgreen) |
+| jazzy | ![jazzy](https://img.shields.io/badge/jazzy-supported-brightgreen) |
+| kilted | ![kilted](https://img.shields.io/badge/kilted-supported-brightgreen) |
+| lyrical | ![lyrical](https://img.shields.io/badge/lyrical-supported-brightgreen) |
 | rolling | ![rolling](https://img.shields.io/badge/rolling-supported-brightgreen) |
 
 ## Plugin (pluginlib)
@@ -30,9 +35,12 @@ All parameters are declared under the plugin namespace, i.e., `/<node_fqn>/easyn
 | `<plugin>.horizon_steps` | `int` | `5` | Number of time steps in the prediction horizon. |
 | `<plugin>.dt` | `double` | `0.1` | Integration time step (seconds). |
 | `<plugin>.safety_radius` | `double` | `0.35` | Safety radius to check possible collisions. |
-| `<plugin>.max_linear_velocity` | `double` | `1.5` | Maximum linear velocity (m/s). |
-| `<plugin>.max_angular_velocity` | `double` | `1.5` | Maximum angular velocity (rad/s). |
+| — | — | — | Velocity and acceleration limits are not this plugin's: they are the robot limits of `controller_node` (`robot_limits.max_linear_vel`, `min_linear_vel`, `max_angular_vel`, `max_linear_acc`, `max_linear_decel`, `max_angular_acc`, `max_angular_decel`), queried with `ControllerMethodBase::get_robot_limits()` and also enforced by ControllerNode's velocity smoother. |
 | `<plugin>.verbose` | `bool` | `false` | Show data on terminal about Optimization. |
+| `<plugin>.use_collision_checker` | `bool` | `false` | Enables the in-loop obstacle constraint (within `safety_radius`). |
+| `<plugin>.min_height` | `double` | `0.1` | Perceived points lower than this (m, map frame) are the floor, not obstacles to avoid. Lower it for sensors mounted lower (e.g. a laser 0.095 m high). |
+
+> **Deprecated:** this plugin's former limit parameters (`max_linear_velocity`, `max_angular_velocity`, under the plugin's name) still apply, with a warning, where `controller_node.robot_limits.*` does not set that limit. They will stop working soon: move them to `robot_limits`.
 
 
 ## Interfaces (Topics and Services)

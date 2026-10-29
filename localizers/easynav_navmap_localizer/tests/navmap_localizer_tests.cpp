@@ -72,7 +72,8 @@ TEST_F(AMCLLocalizerInitialPoseTest, SubscribesToInitialPoseWithDefaultCallbackG
   const double yaw1 = 2.0;
 
   rclcpp::NodeOptions options;
-  options.parameter_overrides({
+  options.parameter_overrides(
+  {
     rclcpp::Parameter("test.num_particles", 100),
     rclcpp::Parameter("test.initial_pose.x", x0),
     rclcpp::Parameter("test.initial_pose.y", y0),
@@ -146,9 +147,13 @@ TEST_F(AMCLLocalizerInitialPoseTest, SubscribesToInitialPoseWithDefaultCallbackG
   }
   pub->publish(msg);
 
+  // The callback hands the particles' poses over to the RT thread, which takes them in its next
+  // cycle: run one after each spin
+  easynav::NavState rt_state;
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(500);
   while (std::chrono::steady_clock::now() < deadline) {
     exec.spin_some();
+    localizer->internal_update_rt(rt_state, true);
     const tf2::Transform tf = localizer->getEstimatedPose();
     const nav_msgs::msg::Odometry odom = localizer->get_pose();
 

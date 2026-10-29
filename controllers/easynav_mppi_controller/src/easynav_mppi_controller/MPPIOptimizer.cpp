@@ -1,10 +1,26 @@
+// Copyright 2025 Intelligent Robotics Lab
+//
+// This file is part of the project Easy Navigation (EasyNav in short)
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include "easynav_mppi_controller/MPPIOptimizer.hpp"
-#include "tf2/utils.hpp"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 #include <cmath>
 #include <limits>
 #include <algorithm>
+
+#include "tf2/utils.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 namespace easynav
 {
@@ -43,8 +59,9 @@ MPPIOptimizer::simulate_trajectory(
 
     if (has_path) {
       // Calculate the index in the path based on the current step
-      size_t path_idx = std::min(static_cast<size_t>((i * path.poses.size()) / horizon_steps),
-          path.poses.size() - 1);
+      size_t path_idx = std::min(
+        static_cast<size_t>((i * path.poses.size()) / horizon_steps),
+        path.poses.size() - 1);
       double target_x = path.poses[path_idx].pose.position.x;
       double target_y = path.poses[path_idx].pose.position.y;
 
@@ -100,12 +117,14 @@ double MPPIOptimizer::compute_cost(
     double dist = std::hypot(dx, dy);
 
     // Heading error is calculated based on the initial yaw
-    double heading_penalty = heading_error(initial_yaw, path.poses[idx].pose.position.x,
-                                               path.poses[idx].pose.position.y, x, y);
+    double heading_penalty = heading_error(
+      initial_yaw, path.poses[idx].pose.position.x,
+      path.poses[idx].pose.position.y, x, y);
 
     // FOV penalty: discourage trajectories outside robot's view
-    double angle_to_goal = heading_error(initial_yaw, trajectory.back().first,
-                                             trajectory.back().second, x, y);
+    double angle_to_goal = heading_error(
+      initial_yaw, trajectory.back().first,
+      trajectory.back().second, x, y);
     double fov_penalty = std::pow(std::max(0.0, angle_to_goal - fov_), 2);
 
     // Accumulate penalties
@@ -242,8 +261,9 @@ MPPIResult MPPIOptimizer::compute_control(
   }
 
   // Softmin: Find minimum cost among samples
-  auto best_sample_it = std::min_element(samples.begin(), samples.end(),
-      [](const auto & a, const auto & b) {return a.cost < b.cost;});
+  auto best_sample_it = std::min_element(
+    samples.begin(), samples.end(),
+    [](const auto & a, const auto & b) {return a.cost < b.cost;});
 
   // Best trajectory and cost
   best_traj = all_trajs[std::distance(samples.begin(), best_sample_it)];
@@ -256,7 +276,7 @@ MPPIResult MPPIOptimizer::compute_control(
   }
 
   if (min_v_sample < 0.05) {
-    lambda_ = std::min(5.0, lambda_ * 1.2); // increase lambda if tends to zero (stop)
+    lambda_ = std::min(5.0, lambda_ * 1.2);  // increase lambda if tends to zero (stop)
   }
 
   // Softmin weighting of samples
@@ -266,7 +286,7 @@ MPPIResult MPPIOptimizer::compute_control(
     denom += sample.cost;
   }
 
- // Weighted average of velocities
+  // Weighted average of velocities
   double vlin = 0.0, vrot = 0.0;
   for (const auto & sample : samples) {
     vlin += sample.v * sample.cost / denom;

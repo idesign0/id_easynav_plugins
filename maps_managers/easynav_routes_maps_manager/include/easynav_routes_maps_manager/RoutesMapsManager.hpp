@@ -16,52 +16,27 @@
 /// \file
 /// \brief Declaration of the RoutesMapsManager class and related types.
 
-#ifndef EASYNAV_PLANNER__ROUTESMAPMANAGER_HPP_
-#define EASYNAV_PLANNER__ROUTESMAPMANAGER_HPP_
+#ifndef EASYNAV_ROUTES_MAPS_MANAGER__ROUTESMAPSMANAGER_HPP_
+#define EASYNAV_ROUTES_MAPS_MANAGER__ROUTESMAPSMANAGER_HPP_
+
+#include <memory>
+#include <vector>
+#include <string>
 
 #include "geometry_msgs/msg/pose.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "visualization_msgs/msg/interactive_marker.hpp"
 #include "visualization_msgs/msg/interactive_marker_feedback.hpp"
-
 #include "interactive_markers/interactive_marker_server.hpp"
-
 #include "std_srvs/srv/trigger.hpp"
-
-#include <memory>
-#include <vector>
-
 #include "pluginlib/class_loader.hpp"
-
 #include "easynav_core/MapsManagerBase.hpp"
-
 #include "easynav_routes_maps_manager/RoutesFilter.hpp"
+#include "easynav_routes_maps_manager/routes_map.hpp"
+#include "easynav_routes_maps_manager/msg/routes_map.hpp"
 
 namespace easynav
 {
-
-/// @brief Simple directed segment between two poses.
-///
-/// Each RouteSegment represents a straight-line connection between two
-/// poses in the navigation frame. The segment can be individually
-/// edited and identified via its @ref id field.
-struct RouteSegment
-{
-  /// @brief Unique identifier for this segment.
-  std::string id;
-
-  /// @brief Start pose of the segment.
-  geometry_msgs::msg::Pose start;
-
-  /// @brief End pose of the segment.
-  geometry_msgs::msg::Pose end;
-
-  /// @brief Whether this segment is currently in edit mode.
-  bool edit_mode{false};
-};
-
-/// @brief Container type representing a full set of navigation routes.
-using RoutesMap = std::vector<RouteSegment>;
 
 /**
  * @class RoutesMapsManager
@@ -92,7 +67,7 @@ public:
    *
    * @throws std::runtime_error if initialization fails.
    */
-  virtual void on_initialize() override;
+  void on_initialize() override;
 
   /**
    * @brief Updates the internal maps using the current navigation state.
@@ -102,7 +77,7 @@ public:
    *
    * @param nav_state Current state of the navigation system.
    */
-  virtual void update(NavState & nav_state) override;
+  void update(NavState & nav_state) override;
 
   /// @brief Access to the loaded routes (for testing and tools).
   const RoutesMap & get_routes() const {return routes_;}
@@ -114,6 +89,14 @@ private:
   /// "routes" key is not present, a default map with a single segment
   /// from (0, 0, 0) to (1, 0, 0) is created instead.
   void load_routes_from_yaml();
+
+  /// @brief Recompute @ref next_route_id_ from whatever is currently in
+  /// @ref routes_, so newly interactively-created routes get IDs that
+  /// don't clash with existing ones. Called after both a fresh YAML
+  /// load and an incoming_routes message, since either can replace
+  /// @ref routes_ wholesale with IDs this manager itself never
+  /// generated.
+  void recompute_next_route_id();
 
   /// @brief Publish the current routes as visualization markers.
   void publish_routes_markers();
@@ -147,8 +130,14 @@ private:
 
   /// @brief Service for saving current routes back to disk.
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr save_routes_srv_;
+
+  /// @brief Subscription that, on receipt, replaces @ref routes_ with
+  /// whatever was published -- same convention as
+  /// easynav_costmap_maps_manager's own "incoming_map" topic.
+  rclcpp::Subscription<easynav_routes_maps_manager::msg::RoutesMap>::SharedPtr
+    incoming_routes_sub_;
 };
 
 }  // namespace easynav
 
-#endif  // EASYNAV_PLANNER__ROUTESMAPMANAGER_HPP_
+#endif  // EASYNAV_ROUTES_MAPS_MANAGER__ROUTESMAPSMANAGER_HPP_

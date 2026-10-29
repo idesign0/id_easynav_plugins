@@ -13,9 +13,10 @@ Vector Field Histogram (VFF) style local obstacle avoidance controller. Generate
 
 | Distribution | Status |
 |---|---|
-| humble | ![kilted](https://img.shields.io/badge/humble-supported-brightgreen) |
-| jazzy | ![kilted](https://img.shields.io/badge/jazzy-supported-brightgreen) |
+| humble | ![humble](https://img.shields.io/badge/humble-supported-brightgreen) |
+| jazzy | ![jazzy](https://img.shields.io/badge/jazzy-supported-brightgreen) |
 | kilted | ![kilted](https://img.shields.io/badge/kilted-supported-brightgreen) |
+| lyrical | ![lyrical](https://img.shields.io/badge/lyrical-supported-brightgreen) |
 | rolling | ![rolling](https://img.shields.io/badge/rolling-supported-brightgreen) |
 
 ## Plugin (pluginlib)
@@ -42,6 +43,12 @@ No ROS parameters are currently declared in code. (Add declarations in the plugi
 | `robot_pose` | `nav_msgs::msg::Odometry` | **Read** | Current pose for steering decisions. |
 | `path` | `nav_msgs::msg::Path` | **Read** | Planned path reference. |
 | `cmd_vel` | `geometry_msgs::msg::TwistStamped` | **Write** | Output velocity command. |
+
+## Velocity limits
+
+The velocity limits are the robot limits of `controller_node` (`robot_limits.max_linear_vel`, `robot_limits.max_angular_vel`), queried with `ControllerMethodBase::get_robot_limits()` and also enforced by ControllerNode's velocity smoother.
+
+> **Deprecated:** this plugin's former limit parameters (`max_speed`, `max_angular_speed`, under the plugin's name) still apply, with a warning, where `controller_node.robot_limits.*` does not set that limit. They will stop working soon: move them to `robot_limits`.
 
 ### Publications
 

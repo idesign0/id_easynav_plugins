@@ -13,15 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 #include <string>
 
 #include "easynav_costmap_common/costmap_2d.hpp"
 #include "easynav_common/types/NavState.hpp"
 #include "easynav_sensors/types/PointPerception.hpp"
 
-#include "easynav_costmap_common/costmap_2d.hpp"
 #include "easynav_costmap_common/cost_values.hpp"
 
+#include "easynav_common/Parameters.hpp"
 #include "easynav_costmap_maps_manager/filters/ObstacleFilter.hpp"
 
 
@@ -30,12 +31,15 @@ namespace easynav
 
 ObstacleFilter::ObstacleFilter()
 {
-
 }
 
 void
 ObstacleFilter::on_initialize()
-{}
+{
+  auto node = get_node();
+  easynav::declare_parameter_if_absent(*node, plugin_name_ + ".min_height", min_height_);
+  node->get_parameter(plugin_name_ + ".min_height", min_height_);
+}
 
 void
 ObstacleFilter::update(NavState & nav_state)
@@ -58,8 +62,8 @@ ObstacleFilter::update(NavState & nav_state)
 
   auto view = PointPerceptionsOpsView(perceptions);
   view.downsample(dynamic_map.getResolution())
-  .fuse(tf_info.map_frame)
-  .filter({NAN, NAN, 0.1}, {NAN, NAN, NAN});
+  .fuse(tf_info.map_frame, stamp, false)
+  .filter({NAN, NAN, min_height_}, {NAN, NAN, NAN});
 
   const auto & fused = view.as_points();
 

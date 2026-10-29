@@ -41,11 +41,13 @@
 
 #include <string>
 
+#include "easynav_common/Parameters.hpp"
+#include "easynav_common/RobotGeometry.hpp"
 #include "easynav_common/types/NavState.hpp"
 #include "easynav_sensors/types/Perceptions.hpp"
 #include "easynav_sensors/types/PointPerception.hpp"
 
-#include "octomap_core/Octomap.hpp"
+#include "easynav_octomap_maps_manager/octomap.hpp"
 
 #include "easynav_octomap_maps_manager/filters/InflationFilter.hpp"
 
@@ -75,7 +77,6 @@ bool InflationFilter::inflate_layer_u8(
   float cost_scaling_factor,
   float inscribed_radius)
 {
-  using namespace ::octomap;
   if (nm.navcels.empty() || inflation_radius <= 0.0f || cost_scaling_factor <= 0.0f) {
     return false;
   }
@@ -85,8 +86,9 @@ bool InflationFilter::inflate_layer_u8(
   if (!src_view || src_view->size() != nm.navcels.size()) {
     return false;
   }
-  auto dst_view = nm.layers.add_or_get<uint8_t>(dst_layer, nm.navcels.size(),
-        layer_type_tag<uint8_t>());
+  auto dst_view = nm.layers.add_or_get<uint8_t>(
+    dst_layer, nm.navcels.size(),
+    layer_type_tag<uint8_t>());
   if (!dst_view) {return false;}
   if (dst_view->data().size() != nm.navcels.size()) {
     const_cast<std::vector<uint8_t> &>(dst_view->data()).assign(nm.navcels.size(), FREE_SPACE);
@@ -111,7 +113,7 @@ bool InflationFilter::inflate_layer_u8(
   std::priority_queue<Node> pq;
 
   // Inicializar dst y semillas
-  auto & dst = dst_view->mutable_data(); // marca dirty
+  auto & dst = dst_view->mutable_data();  // marca dirty
   const auto & src = src_view->data();
 
   bool any_seed = false;
@@ -123,20 +125,20 @@ bool InflationFilter::inflate_layer_u8(
       dst[cid] = LETHAL_OBSTACLE;
       any_seed = true;
     } else if (s == NO_INFORMATION) {
-      dst[cid] = NO_INFORMATION; // mantener desconocido
+      dst[cid] = NO_INFORMATION;  // mantener desconocido
     } else {
       // si dst==src (in-place), preserva el valor actual; si no, escribe 0
       if (dst_layer != src_layer) {dst[cid] = FREE_SPACE;}
     }
   }
-  if (!any_seed) {return true;} // nada que inflar
+  if (!any_seed) {return true;}  // nada que inflar
 
   auto cost_from_dist = [&](float d) -> uint8_t {
       if (d <= 0.0f) {return LETHAL_OBSTACLE;}         // 254
-      if (d <= r_ins) {return INSCRIBED_INFLATED_OBSTACLE;} // 253
+      if (d <= r_ins) {return INSCRIBED_INFLATED_OBSTACLE;}  // 253
       if (d > R) {return FREE_SPACE;}                  // 0
 
-      const float x = d - r_ins; // >= 0
+      const float x = d - r_ins;  // >= 0
       const double factor = -1.0 * cost_scaling_factor * x;
       double c = std::exp(factor) * (static_cast<int>(INSCRIBED_INFLATED_OBSTACLE) - 1);
       if (c < 0.0) {c = 0.0;}
@@ -153,7 +155,7 @@ bool InflationFilter::inflate_layer_u8(
     // Escribir coste si no es desconocido ni letal
     if (dst[u] != NO_INFORMATION && dst[u] != LETHAL_OBSTACLE) {
       const uint8_t c = cost_from_dist(du);
-      if (c > dst[u]) {dst[u] = c;} // tomamos el máximo (monótono)
+      if (c > dst[u]) {dst[u] = c;}  // tomamos el máximo (monótono)
     }
 
     // Relajar vecinos
@@ -184,16 +186,21 @@ InflationFilter::on_initialize()
 
   inflation_radius_ = 0.3;
   cost_scaling_factor_ = 3.0;
-  inscribed_radius_ = 0.3;
 
-  node->declare_parameter(plugin_name_ + ".inflation_radius", inflation_radius_);
-  node->declare_parameter(plugin_name_ + ".cost_scaling_factor", cost_scaling_factor_);
-  node->declare_parameter(plugin_name_ + ".inscribed_radius", inscribed_radius_);
+  easynav::declare_parameter_if_absent(
+    *node, plugin_name_ + ".inflation_radius",
+    inflation_radius_);
+  easynav::declare_parameter_if_absent(
+    *node, plugin_name_ + ".cost_scaling_factor",
+    cost_scaling_factor_);
   node->get_parameter(plugin_name_ + ".inflation_radius", inflation_radius_);
   node->get_parameter(plugin_name_ + ".cost_scaling_factor", cost_scaling_factor_);
-  node->get_parameter(plugin_name_ + ".inscribed_radius", inscribed_radius_);
+  // The robot's: "system_node.robot_geometry" (the filter's own is deprecated).
+  inscribed_radius_ = easynav::get_robot_geometry(
+    *node, {"", plugin_name_ + ".inscribed_radius", ""}).inscribed_radius;
 
-  RCLCPP_INFO(node->get_logger(),
+  RCLCPP_INFO(
+    node->get_logger(),
     "InflationFilter with inflation_radius = %lf  cost_scaling_factor = %lf",
     inflation_radius_, cost_scaling_factor_);
 }
@@ -207,10 +214,11 @@ InflationFilter::update(::easynav::NavState & nav_state)
 
   octomap_ = nav_state.get<::octomap::Octomap>("map");
 
-  if (!inflate_layer_u8(octomap_, "obstacles", "inflated_obstacles",
-    inflation_radius_, cost_scaling_factor_, 0.3))
+  if (!inflate_layer_u8(
+      octomap_, "obstacles", "inflated_obstacles",
+      inflation_radius_, cost_scaling_factor_, 0.3))
   {
-    RCLCPP_ERROR(parent_node_->get_logger(), "Error inflating at ObstacleFilter");
+    RCLCPP_ERROR(get_node()->get_logger(), "Error inflating at ObstacleFilter");
   }
 
   nav_state.set("map", octomap_);

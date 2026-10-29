@@ -14,17 +14,19 @@
 // limitations under the License.
 
 /// \file
-/// \brief Declaration of the AStarPlanner class implementing A* path planning using ::navmap::NavMap.
+/// \brief Declaration of the AStarPlanner class implementing A* path planning using
+/// ::navmap::NavMap.
 
-#ifndef EASYNAV_NAVMAP_PLANNER__NAVMAPPLANNER_HPP_
-#define EASYNAV_NAVMAP_PLANNER__NAVMAPPLANNER_HPP_
+#ifndef EASYNAV_NAVMAP_PLANNER__ASTARPLANNER_HPP_
+#define EASYNAV_NAVMAP_PLANNER__ASTARPLANNER_HPP_
 
-#include <vector>
 #include <cstdint>
-#include <Eigen/Core>
+#include <limits>
+#include <vector>
+#include <string>
 
+#include "Eigen/Core"
 #include "nav_msgs/msg/path.hpp"
-
 #include "easynav_core/PlannerMethodBase.hpp"
 #include "navmap_core/NavMap.hpp"
 #include "easynav_common/types/NavState.hpp"
@@ -37,7 +39,15 @@ namespace navmap
 /// \brief A planner implementing the A* algorithm on a ::navmap::NavMap grid.
 ///
 /// This class generates a collision-free path using A* search over a surface-based NavMap.
-/// It supports cost-based penalties and anisotropic movement costs.
+/// The search moves between NavCels that share a vertex (not only an edge), so no direction is
+/// favored by how the mesh is split. Then the path is shortened by line of sight: waypoints are
+/// skipped while the straight segment stays on traversable NavCels no costlier than the ones
+/// it replaces.
+///
+/// Terrain (off by default): a step costs more the steeper the NavCel (`terrain.slope_weight`), and
+/// NavCels beyond the robot's limits of slope, step, roughness or free height are not
+/// traversable (navmap::compute_descriptors, once per map). Links between surfaces
+/// (navmap::SurfaceLink) of the allowed types are taken as edges of the search.
 class AStarPlanner : public PlannerMethodBase
 {
 public:
@@ -46,7 +56,7 @@ public:
    *
    * Initializes internal parameters and configuration values.
    */
-  explicit AStarPlanner();
+  AStarPlanner();
 
   /**
    * @brief Initializes the planner.
@@ -56,7 +66,7 @@ public:
    *
    * @throws std::runtime_error if initialization fails.
    */
-  virtual void on_initialize() override;
+  void on_initialize() override;
 
   /**
    * @brief Executes a planning cycle using the current navigation state.
@@ -68,20 +78,59 @@ public:
   void update(NavState & nav_state) override;
 
 protected:
-  double cost_factor_;        ///< Scaling factor applied to cell cost values.
-  double inflation_penalty_;  ///< Extra cost penalty for paths near inflated obstacles.
-  double cost_axial_;         ///< Cost multiplier for axial (horizontal/vertical) moves.
-  double cost_diagonal_;      ///< Cost multiplier for diagonal moves.
+  double cost_factor_ {2.0};        ///< Scaling factor applied to cell cost values.
+  double cost_weight_ {5.0};        ///< Weight of the cell cost (inflation) against length.
+  double cost_axial_ {1.0};         ///< Cost multiplier for axial (horizontal/vertical) moves.
+  double cost_diagonal_ {1.0};      ///< Cost multiplier for diagonal moves.
   std::string layer_name_;
   bool continuous_replan_ {true};     ///< Whether to replan the path at control frequency.
+
+  // Terrain: all off by default
+  double slope_weight_ {0.0};    ///< Extra cost per meter: weight * tan^2 of the NavCel's slope
+  double max_slope_deg_ {90.0};  ///< NavCels steeper than this are not traversable
+  double max_step_ {0.0};        ///< > 0: NavCels with a larger height step are not traversable
+  double max_roughness_ {0.0};   ///< > 0: NavCels rougher than this (RMS, m) are not traversable
+  double min_clearance_ {0.0};   ///< > 0: NavCels with less free height above are not traversable
+  bool use_links_ {true};        ///< Take the links between surfaces of the allowed types
+  std::vector<char> link_type_ok_;  ///< By navmap::LinkType value
   nav_msgs::msg::Path current_path_;  ///< Most recently computed path.
   geometry_msgs::msg::Pose current_goal_;  ///< Current goal.
 
   /// Publisher for the computed navigation path (for visualization or monitoring).
   rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
 
+  /// @brief A non-empty path was published, so the topic must be cleared on failure.
+  bool path_published_ {false};
+
+  /// @brief Empties the path (NavState and topic), so a failed plan never keeps the last one.
+  void clear_path(NavState & nav_state);
+
   /// Cached centroids for each NavCel (same indexing as ::navmap::NavMap::navcels).
   std::vector<Eigen::Vector3f> centroids_;
+
+  /// Geometry the caches were built for (navmap::NavMap::geometry_id()).
+  std::uint64_t geometry_id_ {0};
+
+  /// Per NavCel: within the terrain limits.
+  std::vector<char> terrain_ok_;
+
+  /// Per NavCel: tan^2 of its slope (the slope cost before slope_weight).
+  std::vector<float> slope_cost_;
+
+  /// A NavCel reachable from another: across an edge, or only through a shared vertex.
+  struct Neighbor
+  {
+    ::navmap::NavCelId cid;
+    std::uint32_t shared_vertex;  ///< Only a vertex in common; kNoVertex: an edge in common.
+  };
+  static constexpr std::uint32_t kNoVertex = std::numeric_limits<std::uint32_t>::max();
+
+  /// Cached neighbors of each NavCel, and NavCels around each vertex.
+  std::vector<std::vector<Neighbor>> neighbors_;
+  std::vector<std::vector<::navmap::NavCelId>> vertex_cels_;
+
+  /// Distance between the centroids of neighbor NavCels (mean): the path's spacing.
+  double cel_spacing_ {0.1};
 
   /// Cached per-NavCel occupancy / cost values (0..255).
   std::vector<std::uint8_t> occ_;
@@ -89,6 +138,9 @@ protected:
   /// Reusable buffers for A* search cost and parent links.
   std::vector<double> g_;
   std::vector<::navmap::NavCelId> parent_;
+
+  /// Which NavCels are within the terrain limits (terrain_ok_), for a new geometry.
+  void build_terrain(const ::navmap::NavMap & map);
 
   /**
    * @brief Ensure internal caches (centroids and A* buffers) are sized for the given map.
@@ -99,6 +151,23 @@ protected:
    * @param map The NavMap for which caches must be valid.
    */
   void ensure_graph_cache(const ::navmap::NavMap & map);
+
+  /**
+   * @brief Shortens a path of NavCel centroids by line of sight.
+   *
+   * From each kept waypoint, it jumps to the farthest one whose straight segment crosses only
+   * traversable NavCels with a cost no higher than the highest of the waypoints in between.
+   * The result is resampled at the NavCel spacing, on the NavMap surface.
+   *
+   * @param map    The NavMap (occ_ holds the costs of this plan).
+   * @param points Waypoints (first: the start's centroid, last: the goal).
+   * @param cels   NavCel of each waypoint.
+   * @return The shortened, resampled waypoints.
+   */
+  std::vector<Eigen::Vector3f> shortcut_path(
+    const ::navmap::NavMap & map,
+    const std::vector<Eigen::Vector3f> & points,
+    const std::vector<::navmap::NavCelId> & cels);
 
   /**
    * @brief Smooth a Path in XY while keeping every waypoint inside its original NavCel.
@@ -152,4 +221,4 @@ protected:
 
 }  // namespace easynav
 
-#endif  // EASYNAV_NAVMAP_PLANNER__NAVMAPPLANNER_HPP_
+#endif  // EASYNAV_NAVMAP_PLANNER__ASTARPLANNER_HPP_

@@ -2,21 +2,22 @@
 Changelog for package easynav_simple_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.4.0 (2026-07-26)
+0.5.1 (2026-10-21)
 ------------------
-* Sync with Rolling branch
-* GPLv3 -> Apache 2.0
-* Contributors: Francisco Martín Rico, Juan S. Cely G., Miguel, migueldm
+* Enable cpplint and copyright linters
+* Contributors: Francisco Martín Rico
 
-0.2.1 (2026-02-27)
+0.5.0 (2026-10-08)
 ------------------
-* 0.2.0
+* Removed unused dependencies
+* Contributors: Francisco Martín Rico
+
+0.4.2 (2026-07-26)
+------------------
 * GPLv3 -> Apache 2.0
-* Rolling updates
 * TFInfo in RTTFBuffer
 * Fix downsample in Simple
-* Cleanup unused headers
-* Contributors: Francisco Martín Rico, Francisco Miguel Moreno, Juan S. Cely G., Miguel
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno, Juan S. Cely, Miguel, migueldm
 
 0.0.2 (2025-10-12)
 ------------------
