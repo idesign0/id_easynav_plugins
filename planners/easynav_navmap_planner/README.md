@@ -6,7 +6,9 @@
 **A\*** path planner operating over a `NavMap` triangular mesh.  
 The planner computes the **minimum-cost path** between the robot and the goal, taking into account both the geometric distance between triangles and the cost values stored in a selected NavMap layer (typically `"inflated_obstacles"`).
 
-Instead of simply avoiding non-free NavCels, the planner integrates their cost values (0–255) into the path evaluation. Cells marked as `LETHAL_OBSTACLE` or `NO_INFORMATION` are considered non-traversable, while inflated or inscribed cells are allowed but penalized proportionally to their cost.  
+Instead of simply avoiding non-free NavCels, the planner integrates their cost values (0–255) into the path evaluation. Cells marked as `LETHAL_OBSTACLE`, `NO_INFORMATION` or inscribed (`INSCRIBED_INFLATED_OBSTACLE`) are non-traversable (inscribed ones only near the start, so a robot inside that band can leave it), while inflated cells are allowed but penalized proportionally to their cost.  
+
+The search moves between NavCels that share a vertex, not only an edge, so no direction is favored by how the mesh is split; a move through a shared vertex is only taken when every NavCel around that vertex is traversable, so the path never slips between two obstacles that touch at a corner. Then the path is shortened by line of sight: from each waypoint it goes straight to the farthest one whose segment crosses only traversable NavCels no costlier than the waypoints it replaces, and the result is resampled at the NavCel spacing on the surface. The path ends exactly at the goal.  
 
 This enables smoother and safer trajectories that still respect proximity constraints imposed by obstacle inflation.
 
@@ -30,11 +32,13 @@ This formulation ensures that:
 - **Maintainers:** Francisco Martín Rico <fmrico@gmail.com>
 
 ## Supported ROS 2 Distributions
+
 | Distribution | Status |
 |---|---|
-| humble | ![kilted](https://img.shields.io/badge/humble-supported-brightgreen) |
-| jazzy | ![kilted](https://img.shields.io/badge/jazzy-supported-brightgreen) |
+| humble | ![humble](https://img.shields.io/badge/humble-supported-brightgreen) |
+| jazzy | ![jazzy](https://img.shields.io/badge/jazzy-supported-brightgreen) |
 | kilted | ![kilted](https://img.shields.io/badge/kilted-supported-brightgreen) |
+| lyrical | ![lyrical](https://img.shields.io/badge/lyrical-supported-brightgreen) |
 | rolling | ![rolling](https://img.shields.io/badge/rolling-supported-brightgreen) |
 
 ## Plugin (pluginlib)
@@ -51,9 +55,19 @@ All parameters are declared under the plugin namespace, i.e.
 | Name | Type | Default | Description |
 |---|---|---:|---|
 | `<plugin>.cost_factor` | `double` | `2.0` | Multiplicative weight for geometric distance; values > 1 increase the relative importance of distance. |
+| `<plugin>.cost_weight` | `double` | `5.0` | Weight of the cell cost (inflation) against the path length; higher values keep paths farther from obstacles. |
 | `<plugin>.continuous_replan` | `bool` | `true` | If true, recomputes the path whenever `NavState` updates; if false, plans once per goal. |
+| `<plugin>.terrain.slope_weight` | `double` | `0.0` | Extra cost per meter on a sloped NavCel: `slope_weight * tan²(slope)`, up, down or across. Gentle slopes cost little and steep ones a lot: with `20`, 5° adds 0.15 per meter, 10° 0.6, 20° 2.6 and 30° 6.7 (the flat costs `cost_factor`, 2). `0` ignores the slope. |
+| `<plugin>.terrain.max_slope_deg` | `double` | `90.0` | NavCels steeper than this are not traversable. |
+| `<plugin>.terrain.max_step` | `double` | `0.0` | `> 0`: NavCels with a larger height step around them (m) are not traversable. |
+| `<plugin>.terrain.max_roughness` | `double` | `0.0` | `> 0`: NavCels rougher than this (RMS distance to the local plane, m) are not traversable. |
+| `<plugin>.terrain.min_clearance` | `double` | `0.0` | `> 0`: NavCels with less free height above (to the next surface of the map, m) are not traversable; e.g. the robot's height. |
+| `<plugin>.links.enabled` | `bool` | `true` | Take the links between surfaces of the map (`navmap::SurfaceLink`). |
+| `<plugin>.links.types` | `list<string>` | `[generic, ramp, door]` | Kinds of link the robot can take: `generic`, `ramp`, `stairs`, `elevator`, `door`. |
 
-**Note:** The planner internally uses hardcoded values for `layer_name` (prefers `"inflated_obstacles"`, fallback to `"obstacles"`), `inflation_penalty` (value used in cost calculation), `cost_axial`, and `cost_diagonal`. These are not runtime-configurable parameters.
+The terrain limits use the NavMap descriptors (`navmap::compute_descriptors`), computed once per map geometry: a few tens of ms on maps of tens of thousands of NavCels (more if the map is rebuilt continuously, as in the maps manager's local mode). The line-of-sight shortcut never replaces part of the path by a steeper or costlier straight segment, and never cuts across a link.
+
+**Note:** The planner internally uses hardcoded values for `layer_name` (prefers `"inflated_obstacles"`, fallback to `"obstacles"`), `cost_axial`, and `cost_diagonal`. These are not runtime-configurable parameters.
 
 ## Interfaces (Topics and Services)
 

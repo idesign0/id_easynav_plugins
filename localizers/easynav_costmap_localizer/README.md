@@ -13,9 +13,10 @@ AMCL-style localizer using a 2D Costmap2D for scoring and odometry/IMU for predi
 
 | Distribution | Status |
 |---|---|
-| humble | ![kilted](https://img.shields.io/badge/humble-supported-brightgreen) |
-| jazzy | ![kilted](https://img.shields.io/badge/jazzy-supported-brightgreen) |
+| humble | ![humble](https://img.shields.io/badge/humble-supported-brightgreen) |
+| jazzy | ![jazzy](https://img.shields.io/badge/jazzy-supported-brightgreen) |
 | kilted | ![kilted](https://img.shields.io/badge/kilted-supported-brightgreen) |
+| lyrical | ![lyrical](https://img.shields.io/badge/lyrical-supported-brightgreen) |
 | rolling | ![rolling](https://img.shields.io/badge/rolling-supported-brightgreen) |
 
 ## Plugin (pluginlib)
@@ -44,6 +45,7 @@ All parameters are declared under the plugin namespace, i.e., `/<node_fqn>/easyn
 | `<plugin>.noise_translation_to_rotation` | `double` | `0.01` | Translation-to-rotation noise coupling. |
 | `<plugin>.min_noise_xy` | `double` | `0.05` | Minimum XY noise (m). |
 | `<plugin>.min_noise_yaw` | `double` | `0.05` | Minimum yaw noise (rad). |
+| `<plugin>.min_height` | `double` | `0.1` | Points lower than this (m, `base_footprint` frame) are the floor and do not correct the particles. Lower it for sensors mounted lower (e.g. a laser 0.095 m high). |
 | `<plugin>.compute_odom_from_tf` | `bool` | `false` | If true, read odometry from TF (odom->base_footprint) instead of /odom topic. |
 
 ## Interfaces (Topics and Services)

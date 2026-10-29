@@ -1,2 +1,23 @@
 ament_add_gtest(navmap_mapsmanager_tests navmap_mapsmanager_tests.cpp)
 target_link_libraries(navmap_mapsmanager_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_mapsmanager_reconfigure_tests navmap_mapsmanager_reconfigure_tests.cpp)
+target_link_libraries(navmap_mapsmanager_reconfigure_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_inflation_geometry_tests navmap_inflation_geometry_tests.cpp)
+target_link_libraries(navmap_inflation_geometry_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_obstacle_filter_tests navmap_obstacle_filter_tests.cpp)
+target_link_libraries(navmap_obstacle_filter_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_inflation_filter_tests navmap_inflation_filter_tests.cpp)
+target_link_libraries(navmap_inflation_filter_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_local_mode_tests navmap_local_mode_tests.cpp)
+target_link_libraries(navmap_local_mode_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_incremental_filters_tests navmap_incremental_filters_tests.cpp)
+target_link_libraries(navmap_incremental_filters_tests ${PROJECT_NAME})
+
+ament_add_gtest(navmap_obstacle_memory_tests navmap_obstacle_memory_tests.cpp)
+target_link_libraries(navmap_obstacle_memory_tests ${PROJECT_NAME})

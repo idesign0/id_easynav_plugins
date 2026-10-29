@@ -14,14 +14,14 @@
 // limitations under the License.
 
 
-#ifndef EASYNAV_OCTOMAP_MAPS_MANAGER__OBSTACLEFILTER_HPP_
-#define EASYNAV_OCTOMAP_MAPS_MANAGER__OBSTACLEFILTER_HPP_
+#ifndef EASYNAV_OCTOMAP_MAPS_MANAGER__FILTERS__OBSTACLEFILTER_HPP_
+#define EASYNAV_OCTOMAP_MAPS_MANAGER__FILTERS__OBSTACLEFILTER_HPP_
 
 #include <string>
 
 #include "pluginlib/class_loader.hpp"
 
-#include "octomap_core/Octomap.hpp"
+#include "easynav_octomap_maps_manager/octomap.hpp"
 #include "easynav_common/types/NavState.hpp"
 
 #include "easynav_octomap_maps_manager/filters/OctomapFilter.hpp"
@@ -48,4 +48,4 @@ private:
 
 }  // namespace octomap
 }  // namespace easynav
-#endif  // EASYNAV_OCTOMAP_MAPS_MANAGER__OBSTACLEFILTER_HPP_
+#endif  // EASYNAV_OCTOMAP_MAPS_MANAGER__FILTERS__OBSTACLEFILTER_HPP_

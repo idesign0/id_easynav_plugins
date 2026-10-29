@@ -21,7 +21,7 @@
 
 #include "pluginlib/class_loader.hpp"
 
-#include "octomap_core/Octomap.hpp"
+#include "easynav_octomap_maps_manager/octomap.hpp"
 #include "easynav_common/types/NavState.hpp"
 
 #include "easynav_octomap_maps_manager/filters/OctomapFilter.hpp"
@@ -60,4 +60,4 @@ protected:
 
 }  // namespace easynav
 
-#endif  // EASYNAV_OCTOMAP_MAPS_MANAGER__FILTERS__IINFLATIONFILTER_HPP_
+#endif  // EASYNAV_OCTOMAP_MAPS_MANAGER__FILTERS__INFLATIONFILTER_HPP_

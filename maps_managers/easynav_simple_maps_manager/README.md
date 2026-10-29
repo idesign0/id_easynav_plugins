@@ -15,9 +15,10 @@ At the heart of this stack is the SimpleMap data structure. It represents the en
 
 | Distribution | Status |
 |---|---|
-| humble | ![kilted](https://img.shields.io/badge/humble-supported-brightgreen) |
-| jazzy | ![kilted](https://img.shields.io/badge/jazzy-supported-brightgreen) |
+| humble | ![humble](https://img.shields.io/badge/humble-supported-brightgreen) |
+| jazzy | ![jazzy](https://img.shields.io/badge/jazzy-supported-brightgreen) |
 | kilted | ![kilted](https://img.shields.io/badge/kilted-supported-brightgreen) |
+| lyrical | ![lyrical](https://img.shields.io/badge/lyrical-supported-brightgreen) |
 | rolling | ![rolling](https://img.shields.io/badge/rolling-supported-brightgreen) |
 
 ## Plugin (pluginlib)
@@ -36,6 +37,7 @@ At the heart of this stack is the SimpleMap data structure. It represents the en
 |---|---|---:|---|
 | `<plugin>.package` | `string` | `""` | Package name used to resolve relative map paths via `ament_index`. |
 | `<plugin>.map_path_file` | `string` | `""` | Relative path (inside the package) to a simple map. |
+| `<plugin>.min_height` | `double` | `0.1` | Perceived points lower than this (m, map frame) are the floor, not obstacles. Lower it for sensors mounted lower (e.g. a laser 0.095 m high). |
 
 ## Interfaces (Topics and Services)
 

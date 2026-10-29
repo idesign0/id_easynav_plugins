@@ -13,18 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-
-#include "easynav_simple_common/SimpleMap.hpp"
-#include "easynav_simple_controller/SimpleController.hpp"
-
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
-
-#include "std_srvs/srv/trigger.hpp"
-
 #include <memory>
 #include <fstream>
+
+#include "gtest/gtest.h"
+#include "easynav_simple_common/SimpleMap.hpp"
+#include "easynav_simple_controller/SimpleController.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "std_srvs/srv/trigger.hpp"
 
 /// \brief Fixture for SimpleController tests (minimal)
 class AMCLLocalizerTest : public ::testing::Test
@@ -131,7 +128,8 @@ TEST_F(AMCLLocalizerTest, IncomingOccupancyGridUpdatesMaps)
   EXPECT_EQ(static_map->at(1, 1), 0);
 }
 
-class FriendAMCLLocalizer : public easynav::SimpleController {
+class FriendAMCLLocalizer : public easynav::SimpleController
+{
 public:
   void force_path(const std::string & path) {map_path_ = path;}
 };
@@ -144,7 +142,7 @@ TEST_F(AMCLLocalizerTest, SavemapServiceWorks)
   tf_info.map_frame = "world_map";
   tf_info.odom_frame = "world_odom";
   tf_info.robot_frame = "world_base";
-  tf_info.robot_frame = "world_footprint_base";
+  tf_info.robot_footprint_frame = "world_footprint_base";
   easynav::RTTFBuffer::getInstance()->set_tf_info(tf_info);
 
   manager->initialize(node, "test_savemap");

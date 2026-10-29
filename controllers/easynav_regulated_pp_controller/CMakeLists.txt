@@ -11,6 +11,7 @@ find_package(easynav_core REQUIRED)
 find_package(easynav_system REQUIRED)
 find_package(easynav_sensors REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
@@ -35,6 +36,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   tf2::tf2
   tf2_geometry_msgs::tf2_geometry_msgs
   pluginlib::pluginlib
+  rclcpp::rclcpp
   ${geometry_msgs_TARGETS}
   ${nav_msgs_TARGETS}
   ${std_msgs_TARGETS}
@@ -55,8 +57,10 @@ install(TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  set(ament_cmake_copyright_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
+  # Humble's ament_copyright does not recognize the license with the EasyNav line in the header
+  if("$ENV{ROS_DISTRO}" STREQUAL "humble")
+    list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_copyright)
+  endif()
   ament_lint_auto_find_test_dependencies()
 
   find_package(ament_cmake_gtest REQUIRED)
@@ -76,6 +80,7 @@ ament_export_dependencies(
   easynav_system
   easynav_sensors
   pluginlib
+  rclcpp
   tf2_ros
   tf2
   tf2_geometry_msgs

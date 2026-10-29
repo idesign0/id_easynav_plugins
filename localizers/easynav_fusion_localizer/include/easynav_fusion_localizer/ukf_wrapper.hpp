@@ -506,7 +506,8 @@ protected:
     std::vector<bool> & updateVector, Eigen::VectorXd & measurement,
     Eigen::MatrixXd & measurementCovariance);
 
-  std::shared_ptr<easynav::LocalizerNode> parent_node_{nullptr};
+  // Not owned: the node owns the localizer (a shared_ptr here would leak the node).
+  easynav::LocalizerNode * parent_node_{nullptr};
 
   //! @brief Whether or not we print diagnostic messages to the /diagnostics
   //! topic
@@ -867,9 +868,8 @@ protected:
   std::string tf_prefix_;
   std::vector<CallbackData> gps_callbackData_arr_;
   bool local_filter_;
-
 };
 
 }  // namespace robot_localization
 
-#endif  // ROBOT_LOCALIZATION__ROS_FILTER_HPP_
+#endif  // EASYNAV_FUSION_LOCALIZER__UKF_WRAPPER_HPP_

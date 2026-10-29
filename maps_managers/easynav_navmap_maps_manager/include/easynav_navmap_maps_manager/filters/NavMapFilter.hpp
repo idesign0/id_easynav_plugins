@@ -14,10 +14,11 @@
 // limitations under the License.
 
 
-#ifndef EASYNAV_PLANNER__FILTERS__NAVMAPFILTER_HPP_
-#define EASYNAV_PLANNER__FILTERS__NAVMAPFILTER_HPP_
+#ifndef EASYNAV_NAVMAP_MAPS_MANAGER__FILTERS__NAVMAPFILTER_HPP_
+#define EASYNAV_NAVMAP_MAPS_MANAGER__FILTERS__NAVMAPFILTER_HPP_
 
 #include <string>
+#include <memory>
 
 #include "easynav_common/types/NavState.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -31,6 +32,7 @@ class NavMapFilter
 {
 public:
   NavMapFilter();
+  virtual ~NavMapFilter() = default;  // plugins are deleted through this base
 
   void
   initialize(
@@ -52,11 +54,11 @@ protected:
   std::shared_ptr<rclcpp_lifecycle::LifecycleNode> get_node() const;
 
 protected:
-  std::shared_ptr<rclcpp_lifecycle::LifecycleNode> parent_node_ {nullptr};
+  std::weak_ptr<rclcpp_lifecycle::LifecycleNode> parent_node_;
   std::string plugin_name_;
 
   float map_resolution_ {0.1};
 };
 }  // namespace navmap
 }  // namespace easynav
-#endif  // EASYNAV_PLANNER__FILTERS__NAVMAPFILTER_HPP_
+#endif  // EASYNAV_NAVMAP_MAPS_MANAGER__FILTERS__NAVMAPFILTER_HPP_

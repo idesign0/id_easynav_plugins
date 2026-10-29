@@ -13,7 +13,10 @@ Maps Manager that maintains an [OctoMap](https://octomap.github.io/) (probabilis
 
 | Distribution | Status |
 |---|---|
+| humble | ![humble](https://img.shields.io/badge/humble-supported-brightgreen) |
+| jazzy | ![jazzy](https://img.shields.io/badge/jazzy-supported-brightgreen) |
 | kilted | ![kilted](https://img.shields.io/badge/kilted-supported-brightgreen) |
+| lyrical | ![lyrical](https://img.shields.io/badge/lyrical-supported-brightgreen) |
 | rolling | ![rolling](https://img.shields.io/badge/rolling-supported-brightgreen) |
 
 ## Plugin (pluginlib)
@@ -42,7 +45,7 @@ Each entry in `<plugin>.filters` defines a sub-namespace `<plugin>.<filter>` wit
 |---|---|---:|---|
 | `<plugin>.inflation.inflation_radius` | `double` | `0.3` | Inflation radius (m) used to expand occupied cells. |
 | `<plugin>.inflation.cost_scaling_factor` | `double` | `3.0` | Exponential decay controlling the reduction of cost with distance. |
-| `<plugin>.inflation.inscribed_radius` | `double` | `0.3` | Inscribed radius (m) used by the inflation model. |
+| `<plugin>.inflation.inscribed_radius` | `double` | — | **Deprecated**: the robot's `system_node.robot_geometry.inscribed_radius`, used unless only this one is configured (with a warning). |
 
 #### ObstacleFilter
 
@@ -63,7 +66,6 @@ maps_manager_node:
         plugin: easynav_octomap_maps_manager/InflationFilter
         inflation_radius: 0.3
         cost_scaling_factor: 3.0
-        inscribed_radius: 0.3
       obstacles:
         plugin: easynav_octomap_maps_manager/ObstacleFilter
 ```

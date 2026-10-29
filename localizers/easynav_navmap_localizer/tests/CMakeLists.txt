@@ -9,3 +9,46 @@ target_link_libraries(navmap_localizer_tests
   rclcpp_lifecycle::rclcpp_lifecycle
   ${std_srvs_TARGETS}
 )
+
+ament_add_gtest(navmap_localizer_reconfigure_tests navmap_localizer_reconfigure_tests.cpp)
+target_link_libraries(navmap_localizer_reconfigure_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+)
+
+ament_add_gtest(navmap_localizer_last_known_pose_tests navmap_localizer_last_known_pose_tests.cpp)
+target_link_libraries(navmap_localizer_last_known_pose_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)
+
+ament_add_gtest(navmap_localizer_predict_tests navmap_localizer_predict_tests.cpp)
+target_link_libraries(navmap_localizer_predict_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)
+
+ament_add_gtest(navmap_localizer_threads_tests navmap_localizer_threads_tests.cpp)
+target_link_libraries(navmap_localizer_threads_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)
+
+ament_add_gtest(navmap_localizer_recovery_tests navmap_localizer_recovery_tests.cpp)
+target_link_libraries(navmap_localizer_recovery_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)
+
+ament_add_gtest(navmap_localizer_correct_tests navmap_localizer_correct_tests.cpp)
+target_link_libraries(navmap_localizer_correct_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)
+
+ament_add_gtest(navmap_localizer_slip_tests navmap_localizer_slip_tests.cpp)
+target_link_libraries(navmap_localizer_slip_tests
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+)

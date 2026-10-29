@@ -16,12 +16,13 @@
 /// \file
 /// \brief Declaration of the SimpleMapsManager method.
 
-#ifndef EASYNAV_PLANNER__SIMPLEMAPMANAGER_HPP_
-#define EASYNAV_PLANNER__SIMPLEMAPMANAGER_HPP_
+#ifndef EASYNAV_SIMPLE_MAPS_MANAGER__SIMPLEMAPSMANAGER_HPP_
+#define EASYNAV_SIMPLE_MAPS_MANAGER__SIMPLEMAPSMANAGER_HPP_
+
+#include <string>
 
 #include "nav_msgs/msg/occupancy_grid.hpp"
 #include "std_srvs/srv/trigger.hpp"
-
 #include "easynav_core/MapsManagerBase.hpp"
 #include "easynav_simple_common/SimpleMap.hpp"
 
@@ -56,7 +57,7 @@ public:
    *
    * @throws std::runtime_error if initialization fails.
    */
-  virtual void on_initialize() override;
+  void on_initialize() override;
 
   /**
    * @brief Updates the internal maps using the current navigation state.
@@ -66,7 +67,7 @@ public:
    *
    * @param nav_state Current state of the navigation system.
    */
-  virtual void update(NavState & nav_state) override;
+  void update(NavState & nav_state) override;
 
   /**
    * @brief Replaces the current static map.
@@ -128,8 +129,11 @@ private:
    * @brief Cached occupancy grid message for the dynamic map.
    */
   nav_msgs::msg::OccupancyGrid dynamic_grid_msg_;
+
+  /// Points below this height (m, map frame) are ignored: floor hits ("<plugin>.min_height")
+  double min_height_ {0.1};
 };
 
 }  // namespace easynav
 
-#endif  // EASYNAV_PLANNER__SIMPLEMAPMANAGER_HPP_
+#endif  // EASYNAV_SIMPLE_MAPS_MANAGER__SIMPLEMAPSMANAGER_HPP_

@@ -99,10 +99,10 @@ TEST(DynamicWindowPurePursuit, ComputeDynamicWindowClampsToAccelLimits)
   current_speed.angular.z = 0.0;
 
   const auto window = easynav::dynamic_window_pure_pursuit::computeDynamicWindow(
-    current_speed, /*max_linear_vel=*/1.0, /*min_linear_vel=*/-1.0,
-    /*max_angular_vel=*/1.0, /*min_angular_vel=*/-1.0,
-    /*max_linear_accel=*/2.0, /*max_linear_decel=*/2.0,
-    /*max_angular_accel=*/2.0, /*max_angular_decel=*/2.0, /*dt=*/0.1);
+    current_speed, /*max_linear_vel=*/ 1.0, /*min_linear_vel=*/ -1.0,
+    /*max_angular_vel=*/ 1.0, /*min_angular_vel=*/ -1.0,
+    /*max_linear_accel=*/ 2.0, /*max_linear_decel=*/ 2.0,
+    /*max_angular_accel=*/ 2.0, /*max_angular_decel=*/ 2.0, /*dt=*/ 0.1);
 
   EXPECT_NEAR(window.max_linear_vel, 0.2, 1e-9);
   EXPECT_NEAR(window.min_linear_vel, -0.2, 1e-9);
@@ -118,7 +118,7 @@ TEST(DynamicWindowPurePursuit, ComputeOptimalVelocityZeroCurvatureForward)
 
   const auto [lin, ang] =
     easynav::dynamic_window_pure_pursuit::computeOptimalVelocityWithinDynamicWindow(
-    window, /*curvature=*/0.0, /*sign=*/1.0);
+    window, /*curvature=*/ 0.0, /*sign=*/ 1.0);
 
   EXPECT_NEAR(lin, 1.0, 1e-9);
   EXPECT_NEAR(ang, 0.0, 1e-9);
@@ -132,6 +132,13 @@ public:
   using easynav::RegulatedPurePursuitController::toRobotFrame;
   using easynav::RegulatedPurePursuitController::remainingPathDistance;
   using easynav::RegulatedPurePursuitController::findClosestPoseIndex;
+  using easynav::RegulatedPurePursuitController::shouldRotateToPath;
+
+  void setRotateToHeadingParams(bool use_rotate_to_heading, double min_angle)
+  {
+    use_rotate_to_heading_ = use_rotate_to_heading;
+    rotate_to_heading_min_angle_ = min_angle;
+  }
 };
 
 TEST(RegulatedPurePursuitControllerHelpers, LookAheadPointInterpolatesOnSegment)
@@ -148,7 +155,7 @@ TEST(RegulatedPurePursuitControllerHelpers, LookAheadPointInterpolatesOnSegment)
   robot.y = 0.0;
 
   const auto carrot = FriendRegulatedPurePursuitController::getLookAheadPoint(
-    path, robot, /*lookahead_dist=*/1.5);
+    path, robot, /*lookahead_dist=*/ 1.5);
 
   EXPECT_NEAR(carrot.x, 1.5, 1e-6);
   EXPECT_NEAR(carrot.y, 0.0, 1e-6);
@@ -172,7 +179,7 @@ TEST(RegulatedPurePursuitControllerHelpers, LookAheadPointIgnoresPathBehindRobot
   robot.y = 0.0;
 
   const auto carrot = FriendRegulatedPurePursuitController::getLookAheadPoint(
-    path, robot, /*lookahead_dist=*/0.5);
+    path, robot, /*lookahead_dist=*/ 0.5);
 
   // The carrot must be ahead of the robot (close to x=9.5), never back at the path's start (x=0).
   EXPECT_NEAR(carrot.x, 9.5, 1e-6);
@@ -209,9 +216,36 @@ TEST(RegulatedPurePursuitControllerHelpers, LookAheadPointClampsToPathEnd)
   robot.y = 0.0;
 
   const auto carrot = FriendRegulatedPurePursuitController::getLookAheadPoint(
-    path, robot, /*lookahead_dist=*/5.0);
+    path, robot, /*lookahead_dist=*/ 5.0);
 
   EXPECT_NEAR(carrot.x, 1.0, 1e-6);
+}
+
+TEST(RegulatedPurePursuitControllerHelpers, ShouldRotateToPathHasHysteresis)
+{
+  // Regression test for the oscillation reported near sharp turns exiting an inflated area: a
+  // single fixed threshold, re-evaluated fresh every tick with no memory of the previous
+  // decision, let the controller chatter between rotate-in-place and curve-follow mode whenever
+  // the (geometrically unstable, near a sharp corner) angle-to-path hovered near it. The fix
+  // requires a *smaller* angle to leave rotate-in-place mode than the one that entered it.
+  FriendRegulatedPurePursuitController controller;
+  controller.setRotateToHeadingParams(/*use_rotate_to_heading=*/ true, /*min_angle=*/ 0.785);
+
+  // Below the entry threshold, and not currently rotating: stay in curve-follow mode.
+  EXPECT_FALSE(controller.shouldRotateToPath(0.5, /*currently_rotating=*/ false));
+  // Above the entry threshold: start rotating in place.
+  EXPECT_TRUE(controller.shouldRotateToPath(0.9, /*currently_rotating=*/ false));
+
+  // The crux of the fix: once rotating, an angle that would never have *started* a rotation
+  // (0.5 < 0.785) must not end one already in progress -- the old single-threshold code would
+  // have flipped back to curve-follow mode here, which is exactly the observed oscillation.
+  EXPECT_TRUE(controller.shouldRotateToPath(0.5, /*currently_rotating=*/ true));
+  // Only once well-aligned (below half the entry threshold) does it stop rotating.
+  EXPECT_FALSE(controller.shouldRotateToPath(0.3, /*currently_rotating=*/ true));
+
+  // Disabled outright regardless of angle or state.
+  controller.setRotateToHeadingParams(/*use_rotate_to_heading=*/ false, /*min_angle=*/ 0.785);
+  EXPECT_FALSE(controller.shouldRotateToPath(3.0, /*currently_rotating=*/ true));
 }
 
 TEST(RegulatedPurePursuitControllerHelpers, ToRobotFrameRotatesAndTranslates)
@@ -231,6 +265,99 @@ TEST(RegulatedPurePursuitControllerHelpers, ToRobotFrameRotatesAndTranslates)
 
   EXPECT_NEAR(local.x, 1.0, 1e-6);
   EXPECT_NEAR(local.y, 0.0, 1e-6);
+}
+
+namespace
+{
+
+// Along the upper floor (z = 2.4) from x = 0 to 5, down a ramp to x = 10 (z = 0), and back
+// along the lower floor, right under the first part, to x = 0
+nav_msgs::msg::Path two_floor_path()
+{
+  nav_msgs::msg::Path path;
+  auto add = [&path](double x, double z) {
+      geometry_msgs::msg::PoseStamped p;
+      p.pose.position.x = x;
+      p.pose.position.z = z;
+      path.poses.push_back(p);
+    };
+  for (int i = 0; i <= 50; ++i) {
+    add(0.1 * i, 2.4);
+  }
+  for (int i = 1; i <= 50; ++i) {
+    add(5.0 + 0.1 * i, 2.4 - 0.048 * i);
+  }
+  for (int i = 1; i <= 100; ++i) {
+    add(10.0 - 0.1 * i, 0.0);
+  }
+  return path;
+}
+
+}  // namespace
+
+TEST(RegulatedPurePursuitControllerHelpers, FindClosestPoseIndexKeepsToTheRobotsFloor)
+{
+  const auto path = two_floor_path();
+  geometry_msgs::msg::Point robot;
+  robot.x = 2.0;
+  robot.z = 2.4;
+  // On the upper floor: its own part, not the lower floor's pose right under it
+  EXPECT_EQ(FriendRegulatedPurePursuitController::findClosestPoseIndex(path, robot), 20u);
+  // On the lower floor, under the same point: the lower floor's pose
+  robot.z = 0.0;
+  EXPECT_EQ(FriendRegulatedPurePursuitController::findClosestPoseIndex(path, robot), 180u);
+  // Halfway down the ramp
+  robot.x = 7.5;
+  robot.z = 1.2;
+  EXPECT_EQ(FriendRegulatedPurePursuitController::findClosestPoseIndex(path, robot), 75u);
+}
+
+TEST(RegulatedPurePursuitControllerHelpers, FindClosestPoseIndexOnFlatGroundIgnoresTheHeight)
+{
+  // A flat path at z = 0 and a robot whose pose is a bit higher (its localizer's height): the
+  // same pose as in 2D
+  nav_msgs::msg::Path path;
+  for (double x = 0.0; x <= 10.0; x += 1.0) {
+    geometry_msgs::msg::PoseStamped p;
+    p.pose.position.x = x;
+    path.poses.push_back(p);
+  }
+  geometry_msgs::msg::Point robot;
+  robot.x = 7.1;
+  robot.y = 0.4;
+  for (double z : {0.0, 0.3, -0.2, 5.0}) {
+    robot.z = z;
+    EXPECT_EQ(FriendRegulatedPurePursuitController::findClosestPoseIndex(path, robot), 7u) << z;
+  }
+}
+
+TEST(RegulatedPurePursuitControllerHelpers, LookAheadPointOnTheUpperFloorFollowsItsOwnPart)
+{
+  // Regression: with the closest pose taken in 2D, a robot on the upper floor picked the lower
+  // floor's part right under it, skipped the ramp and stayed over the goal
+  const auto path = two_floor_path();
+  geometry_msgs::msg::Point robot;
+  robot.x = 2.0;
+  robot.z = 2.4;
+  const auto carrot = FriendRegulatedPurePursuitController::getLookAheadPoint(path, robot, 1.0);
+  EXPECT_NEAR(carrot.x, 3.0, 1e-6);  // the carrot is 2D: its x tells the part
+  // Near the end of the upper floor it goes on down the ramp (x > 5), not back along the lower
+  // floor (x < 4.8)
+  robot.x = 4.8;
+  const auto down = FriendRegulatedPurePursuitController::getLookAheadPoint(path, robot, 1.0);
+  EXPECT_GT(down.x, 5.0);
+}
+
+TEST(RegulatedPurePursuitControllerHelpers, RemainingPathDistanceOnTheUpperFloorCountsTheDescent)
+{
+  const auto path = two_floor_path();
+  geometry_msgs::msg::Point robot;
+  robot.x = 2.0;
+  robot.z = 2.4;
+  // 3 m to the ramp, 5 m along it (in XY) and 10 m back on the lower floor
+  EXPECT_NEAR(FriendRegulatedPurePursuitController::remainingPathDistance(path, robot), 18.0, 1e-6);
+  robot.z = 0.0;  // under it, on the lower floor: 2 m left
+  EXPECT_NEAR(FriendRegulatedPurePursuitController::remainingPathDistance(path, robot), 2.0, 1e-6);
 }
 
 TEST(RegulatedPurePursuitControllerHelpers, RemainingPathDistanceFromClosestPoint)

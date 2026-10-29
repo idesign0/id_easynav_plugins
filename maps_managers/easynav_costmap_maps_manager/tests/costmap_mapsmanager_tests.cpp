@@ -167,7 +167,8 @@ TEST_F(CostmapMapsManagerTest, IncomingMapTopicUpdatesInternalAndNavState)
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node->get_node_base_interface());
 
-  const std::string topic = node->get_fully_qualified_name() + std::string("/test/incoming_map");
+  const std::string topic = node->get_node_base_interface()->get_fully_qualified_name() +
+    std::string("/test/incoming_map");
   auto pub = node->create_publisher<nav_msgs::msg::OccupancyGrid>(
     topic, rclcpp::QoS(1).transient_local().reliable());
   pub->on_activate();
@@ -191,12 +192,13 @@ TEST_F(CostmapMapsManagerTest, IncomingMapTopicUpdatesInternalAndNavState)
   const auto dyn_ptr = navstate.get_ptr<easynav::Costmap2D>("map");
   ASSERT_TRUE(dyn_ptr != nullptr);
   EXPECT_EQ(dyn_ptr->getCost(5, 5), easynav::LETHAL_OBSTACLE);
-  EXPECT_EQ(dyn_ptr->getLastModifiedStamp().nanoseconds(),
+  EXPECT_EQ(
+    dyn_ptr->getLastModifiedStamp().nanoseconds(),
     base_after.getLastModifiedStamp().nanoseconds());
 }
 
 ///// \brief Dynamic map update test with point cloud
-//TEST_F(CostmapMapsManagerTest, BasicDynamicUpdate)
+// TEST_F(CostmapMapsManagerTest, BasicDynamicUpdate)
 //{
 //  auto node = std::make_shared<rclcpp_lifecycle::LifecycleNode>("test_node");
 //  auto manager = std::make_shared<easynav::CostmapMapsManager>();
@@ -236,7 +238,7 @@ TEST_F(CostmapMapsManagerTest, IncomingMapTopicUpdatesInternalAndNavState)
 //}
 //
 ///// \brief OccupancyGrid updates map via subscription
-//TEST_F(CostmapMapsManagerTest, IncomingOccupancyGridUpdatesMaps)
+// TEST_F(CostmapMapsManagerTest, IncomingOccupancyGridUpdatesMaps)
 //{
 //  auto node = std::make_shared<rclcpp_lifecycle::LifecycleNode>("test_node2");
 //  auto manager = std::make_shared<easynav::CostmapMapsManager>();
@@ -275,14 +277,14 @@ TEST_F(CostmapMapsManagerTest, IncomingMapTopicUpdatesInternalAndNavState)
 //}
 //
 ///// \brief Helper subclass to force map path for savemap
-//class FriendCostmapMapsManager : public easynav::CostmapMapsManager
+// class FriendCostmapMapsManager : public easynav::CostmapMapsManager
 //{
-//public:
+// public:
 //  void force_path(const std::string & path) {map_path_ = path;}
 //};
 //
 ///// \brief Test that the savemap service correctly stores YAML and PGM files
-//TEST_F(CostmapMapsManagerTest, SavemapServiceWorks)
+// TEST_F(CostmapMapsManagerTest, SavemapServiceWorks)
 //{
 //  auto node = std::make_shared<rclcpp_lifecycle::LifecycleNode>("test_savemap_node");
 //  auto manager = std::make_shared<FriendCostmapMapsManager>();
@@ -323,7 +325,8 @@ TEST_F(CostmapMapsManagerTest, IncomingMapTopicUpdatesInternalAndNavState)
 //
 //  // Reload the map from the generated YAML + PGM files
 //  nav_msgs::msg::OccupancyGrid loaded_grid;
-//  EXPECT_EQ(easynav::loadMapFromYaml(yaml_path + ".yaml", loaded_grid), easynav::LOAD_MAP_SUCCESS);
+//  EXPECT_EQ(easynav::loadMapFromYaml(yaml_path + ".yaml", loaded_grid),
+//  easynav::LOAD_MAP_SUCCESS);
 //
 //  easynav::Costmap2D loaded_map(loaded_grid);
 //
