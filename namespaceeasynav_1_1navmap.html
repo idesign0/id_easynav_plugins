@@ -112,11 +112,13 @@ Classes</h2></td></tr>
 <tr class="memitem:AStarPlanner" id="r_AStarPlanner"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeasynav_1_1navmap_1_1AStarPlanner.html">AStarPlanner</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A planner implementing the A* algorithm on a ::navmap::NavMap grid.  <a href="classeasynav_1_1navmap_1_1AStarPlanner.html#details">More...</a><br /></td></tr>
 <tr class="memitem:InflationFilter" id="r_InflationFilter"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeasynav_1_1navmap_1_1InflationFilter.html">InflationFilter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">"inflated_obstacles": cost by distance (along the surface) to the obstacles of the "obstacles" layer and, optionally, to the open edges of the NavMap.  <a href="classeasynav_1_1navmap_1_1InflationFilter.html#details">More...</a><br /></td></tr>
 <tr class="memitem:LoadParameters" id="r_LoadParameters"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeasynav_1_1navmap_1_1LoadParameters.html">LoadParameters</a></td></tr>
 <tr class="memitem:NavMapFilter" id="r_NavMapFilter"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeasynav_1_1navmap_1_1NavMapFilter.html">NavMapFilter</a></td></tr>
 <tr class="memitem:NavMapMapsManager" id="r_NavMapMapsManager"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeasynav_1_1navmap_1_1NavMapMapsManager.html">NavMapMapsManager</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A plugin-based map manager using the <a class="el" href="classeasynav_1_1SimpleMap.html" title="Simple 2D uint8_t grid using basic C++ types, with full metric conversion support.">SimpleMap</a> data structure.  <a href="classeasynav_1_1navmap_1_1NavMapMapsManager.html#details">More...</a><br /></td></tr>
 <tr class="memitem:ObstacleFilter" id="r_ObstacleFilter"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeasynav_1_1navmap_1_1ObstacleFilter.html">ObstacleFilter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks as obstacles the NavCels under the points that rise above the NavMap surface.  <a href="classeasynav_1_1navmap_1_1ObstacleFilter.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Particle" id="r_Particle"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeasynav_1_1navmap_1_1Particle.html">Particle</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure representing a single particle in the AMCL algorithm.  <a href="structeasynav_1_1navmap_1_1Particle.html#details">More...</a><br /></td></tr>
 <tr class="memitem:PerceptionModel" id="r_PerceptionModel"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classeasynav_1_1navmap_1_1PerceptionModel.html">PerceptionModel</a></td></tr>
@@ -126,7 +128,7 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a38a5ef5d8850a2e3d4ec867c65a79d63" id="r_a38a5ef5d8850a2e3d4ec867c65a79d63"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a38a5ef5d8850a2e3d4ec867c65a79d63">ProgressCallback</a> = std::function&lt;void(float)&gt;</td></tr>
+<tr class="memitem:af36e0a310f2756be974f818724d464b8" id="r_af36e0a310f2756be974f818724d464b8"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#af36e0a310f2756be974f818724d464b8">ProgressCallback</a> = std::function&lt;void (float)&gt;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -152,7 +154,7 @@ Functions</h2></td></tr>
 <tr class="memitem:acba4add0adbb3396cfa75fc903193cf4" id="r_acba4add0adbb3396cfa75fc903193cf4"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#acba4add0adbb3396cfa75fc903193cf4">extractYaw</a> (const tf2::Transform &amp;T)</td></tr>
 <tr class="memitem:afcd1e85e181f9a1b71aefb6d573a974b" id="r_afcd1e85e181f9a1b71aefb6d573a974b"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#afcd1e85e181f9a1b71aefb6d573a974b">get_home_dir</a> ()</td></tr>
 <tr class="memitem:a27199b6c5c41cd0c496807946d16ad83" id="r_a27199b6c5c41cd0c496807946d16ad83"><td class="memItemLeft">std::optional&lt; tf2::Quaternion &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a27199b6c5c41cd0c496807946d16ad83">get_latest_imu_quat</a> (const NavState &amp;nav_state)</td></tr>
-<tr class="memitem:a2bdbcb6e84e8bb320d00f1ece63dcf4e" id="r_a2bdbcb6e84e8bb320d00f1ece63dcf4e"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classBonxai_1_1ProbabilisticMap.html">Bonxai::ProbabilisticMap</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2bdbcb6e84e8bb320d00f1ece63dcf4e">inflate_map</a> (const std::shared_ptr&lt; <a class="el" href="classBonxai_1_1ProbabilisticMap.html">Bonxai::ProbabilisticMap</a> &gt; &amp;src, double sigma, double p_min, <a class="el" href="#a38a5ef5d8850a2e3d4ec867c65a79d63">ProgressCallback</a> progress=nullptr)</td></tr>
+<tr class="memitem:a2bdbcb6e84e8bb320d00f1ece63dcf4e" id="r_a2bdbcb6e84e8bb320d00f1ece63dcf4e"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classBonxai_1_1ProbabilisticMap.html">Bonxai::ProbabilisticMap</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2bdbcb6e84e8bb320d00f1ece63dcf4e">inflate_map</a> (const std::shared_ptr&lt; <a class="el" href="classBonxai_1_1ProbabilisticMap.html">Bonxai::ProbabilisticMap</a> &gt; &amp;src, double sigma, double p_min, <a class="el" href="#af36e0a310f2756be974f818724d464b8">ProgressCallback</a> progress=nullptr)</td></tr>
 <tr class="memitem:ad65be2857c82bbadf9e7eb59ad067f63" id="r_ad65be2857c82bbadf9e7eb59ad067f63"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad65be2857c82bbadf9e7eb59ad067f63">loadMapFromFile</a> (const <a class="el" href="structeasynav_1_1navmap_1_1LoadParameters.html">LoadParameters</a> &amp;load_parameters, nav_msgs::msg::OccupancyGrid &amp;map)</td></tr>
 <tr class="memdesc:ad65be2857c82bbadf9e7eb59ad067f63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the image from map file and generate an OccupancyGrid.  <br /></td></tr>
 <tr class="memitem:adada2e5c817d3b2b022048f497912d10" id="r_adada2e5c817d3b2b022048f497912d10"><td class="memItemLeft"><a class="el" href="#a3150b0c80fdf34b4b642b72a83c8b66a">LOAD_MAP_STATUS</a>&#160;</td><td class="memItemRight"><a class="el" href="#adada2e5c817d3b2b022048f497912d10">loadMapFromYaml</a> (const std::string &amp;yaml_file, nav_msgs::msg::OccupancyGrid &amp;map)</td></tr>
@@ -174,14 +176,14 @@ Functions</h2></td></tr>
 <tr class="memdesc:a707e7fc5553ae52ca715c50536f19b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the given subnode value.  <br /></td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
-<a id="a38a5ef5d8850a2e3d4ec867c65a79d63" name="a38a5ef5d8850a2e3d4ec867c65a79d63"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38a5ef5d8850a2e3d4ec867c65a79d63">&#9670;&#160;</a></span>ProgressCallback</h2>
+<a id="af36e0a310f2756be974f818724d464b8" name="af36e0a310f2756be974f818724d464b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af36e0a310f2756be974f818724d464b8">&#9670;&#160;</a></span>ProgressCallback</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="#a38a5ef5d8850a2e3d4ec867c65a79d63">ProgressCallback</a> = std::function&lt;void(float)&gt;</td>
+          <td class="memname">using <a class="el" href="#af36e0a310f2756be974f818724d464b8">ProgressCallback</a> = std::function&lt;void (float)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -460,7 +462,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="#a38a5ef5d8850a2e3d4ec867c65a79d63">ProgressCallback</a></td>          <td class="paramname"><span class="paramname"><em>progress</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#af36e0a310f2756be974f818724d464b8">ProgressCallback</a></td>          <td class="paramname"><span class="paramname"><em>progress</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

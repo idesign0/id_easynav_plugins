@@ -114,9 +114,11 @@ Inheritance diagram for CostmapPlanner:</div>
 <div class="dyncontent">
 <div class="center"><img src="classeasynav_1_1CostmapPlanner__inherit__graph.png" border="0" usemap="#aCostmapPlanner_inherit__map" loading="lazy" alt="Inheritance graph"/></div>
 <map name="aCostmapPlanner_inherit__map" id="aCostmapPlanner_inherit__map">
-<area shape="rect" title="A planner implementing the A* algorithm on a Costmap2D grid." alt="" coords="16,79,133,105"/>
-<area shape="rect" href="classPlannerMethodBase.html" title=" " alt="" coords="5,5,144,31"/>
-<area shape="poly" title=" " alt="" coords="77,46,77,79,72,79,72,46"/>
+<area shape="rect" title="A planner implementing the A* algorithm on a Costmap2D grid." alt="" coords="30,79,148,105"/>
+<area shape="rect" href="classTestableCostmapPlanner.html" title=" " alt="" coords="5,153,173,178"/>
+<area shape="poly" title=" " alt="" coords="92,120,92,152,86,152,86,120"/>
+<area shape="rect" href="classPlannerMethodBase.html" title=" " alt="" coords="20,5,158,31"/>
+<area shape="poly" title=" " alt="" coords="92,46,92,79,86,79,86,46"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -144,7 +146,7 @@ Collaboration diagram for CostmapPlanner:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4af8c9ca8afd491cb4741a1e3c636e7b" id="r_a4af8c9ca8afd491cb4741a1e3c636e7b"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4af8c9ca8afd491cb4741a1e3c636e7b">CostmapPlanner</a> ()</td></tr>
 <tr class="memdesc:a4af8c9ca8afd491cb4741a1e3c636e7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
-<tr class="memitem:ac9d1795b6cf8a4da7bf9b33f783db911" id="r_ac9d1795b6cf8a4da7bf9b33f783db911"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ac9d1795b6cf8a4da7bf9b33f783db911">on_initialize</a> () override</td></tr>
+<tr class="memitem:ac9d1795b6cf8a4da7bf9b33f783db911" id="r_ac9d1795b6cf8a4da7bf9b33f783db911"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac9d1795b6cf8a4da7bf9b33f783db911">on_initialize</a> () override</td></tr>
 <tr class="memdesc:ac9d1795b6cf8a4da7bf9b33f783db911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the planner.  <br /></td></tr>
 <tr class="memitem:a24ddfd2eba3d3d6a90d492e8d25ff0da" id="r_a24ddfd2eba3d3d6a90d492e8d25ff0da"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a24ddfd2eba3d3d6a90d492e8d25ff0da">update</a> (NavState &amp;nav_state) override</td></tr>
 <tr class="memdesc:a24ddfd2eba3d3d6a90d492e8d25ff0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes a planning cycle using the current navigation state.  <br /></td></tr>
@@ -153,6 +155,8 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:ad8dd8ff2b3fee4c3dca90b0e2b091d66" id="r_ad8dd8ff2b3fee4c3dca90b0e2b091d66"><td class="memItemLeft">std::vector&lt; geometry_msgs::msg::Pose &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad8dd8ff2b3fee4c3dca90b0e2b091d66">a_star_path</a> (const <a class="el" href="classCostmap2D.html">Costmap2D</a> &amp;map, const geometry_msgs::msg::Pose &amp;start, const geometry_msgs::msg::Pose &amp;goal)</td></tr>
 <tr class="memdesc:ad8dd8ff2b3fee4c3dca90b0e2b091d66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal A* path planning routine.  <br /></td></tr>
+<tr class="memitem:a13406c93a98eb535a0335b12478ffa35" id="r_a13406c93a98eb535a0335b12478ffa35"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a13406c93a98eb535a0335b12478ffa35">clear_current_path</a> (NavState &amp;nav_state)</td></tr>
+<tr class="memdesc:a13406c93a98eb535a0335b12478ffa35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empties the path (NavState and topic), so a failed plan never keeps the last one.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -180,9 +184,6 @@ Protected Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">CostmapPlanner </td>
@@ -191,11 +192,6 @@ Protected Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Default constructor. </p>
@@ -255,6 +251,33 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a13406c93a98eb535a0335b12478ffa35" name="a13406c93a98eb535a0335b12478ffa35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13406c93a98eb535a0335b12478ffa35">&#9670;&#160;</a></span>clear_current_path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void clear_current_path </td>
+          <td>(</td>
+          <td class="paramtype">NavState &amp;</td>          <td class="paramname"><span class="paramname"><em>nav_state</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Empties the path (NavState and topic), so a failed plan never keeps the last one. </p>
+
+</div>
+</div>
 <a id="ac9d1795b6cf8a4da7bf9b33f783db911" name="ac9d1795b6cf8a4da7bf9b33f783db911"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9d1795b6cf8a4da7bf9b33f783db911">&#9670;&#160;</a></span>on_initialize()</h2>
 
@@ -273,7 +296,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

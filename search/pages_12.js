@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['⚙️_20controllers_0',['⚙️ Controllers',['../index.html#autotoc_md6',1,'']]]
+  ['usage_0',['Usage',['../dir_eb6561881223f5d4348e8fc4dee0038a.html#autotoc_md303',1,'Usage'],['../dir_b914104ef47cb0d0151b35e35c90056a.html#autotoc_md307',1,'Usage']]]
 ];

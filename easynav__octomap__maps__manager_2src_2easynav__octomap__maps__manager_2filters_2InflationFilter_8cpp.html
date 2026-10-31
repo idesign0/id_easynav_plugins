@@ -102,10 +102,12 @@ document.addEventListener('DOMContentLoaded', codefold.init);
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;string&gt;</code><br />
+<code>#include &quot;easynav_common/Parameters.hpp&quot;</code><br />
+<code>#include &quot;easynav_common/RobotGeometry.hpp&quot;</code><br />
 <code>#include &quot;easynav_common/types/NavState.hpp&quot;</code><br />
 <code>#include &quot;easynav_sensors/types/Perceptions.hpp&quot;</code><br />
 <code>#include &quot;easynav_sensors/types/PointPerception.hpp&quot;</code><br />
-<code>#include &quot;octomap_core/Octomap.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="octomap_8hpp_source.html">easynav_octomap_maps_manager/octomap.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="easynav__octomap__maps__manager_2include_2easynav__octomap__maps__manager_2filters_2InflationFilter_8hpp_source.html">easynav_octomap_maps_manager/filters/InflationFilter.hpp</a>&quot;</code><br />
 <code>#include &lt;pluginlib/class_list_macros.hpp&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -113,34 +115,41 @@ Include dependency graph for InflationFilter.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="easynav__octomap__maps__manager_2src_2easynav__octomap__maps__manager_2filters_2InflationFilter_8cpp__incl.png" border="0" usemap="#amaps__managers_2easynav__octomap__maps__manager_2src_2easynav__octomap__maps__manager_2filters_2InflationFilter_8cpp" loading="lazy" alt=""/></div>
 <map name="amaps__managers_2easynav__octomap__maps__manager_2src_2easynav__octomap__maps__manager_2filters_2InflationFilter_8cpp" id="amaps__managers_2easynav__octomap__maps__manager_2src_2easynav__octomap__maps__manager_2filters_2InflationFilter_8cpp">
-<area shape="rect" title=" " alt="" coords="235,5,451,76"/>
-<area shape="rect" title=" " alt="" coords="156,309,210,334"/>
-<area shape="poly" title=" " alt="" coords="236,54,191,63,144,78,100,98,61,126,31,156,13,186,9,201,9,217,13,234,23,252,47,277,77,295,110,306,142,313,141,319,109,312,75,300,44,281,18,255,8,236,3,218,3,201,8,184,27,152,57,122,98,94,143,73,189,58,234,48"/>
-<area shape="rect" title=" " alt="" coords="578,301,740,342"/>
-<area shape="poly" title=" " alt="" coords="452,43,541,57,588,70,634,86,678,108,717,136,750,170,775,212,781,233,775,255,755,278,731,296,728,292,752,274,770,252,776,233,770,214,746,173,713,140,675,113,632,91,586,75,539,62,451,49"/>
-<area shape="rect" title=" " alt="" coords="83,124,240,165"/>
-<area shape="poly" title=" " alt="" coords="283,79,211,118,209,114,280,74"/>
-<area shape="rect" title=" " alt="" coords="264,124,422,165"/>
-<area shape="poly" title=" " alt="" coords="346,76,346,108,340,108,340,76"/>
-<area shape="rect" title=" " alt="" coords="32,220,217,246"/>
-<area shape="poly" title=" " alt="" coords="236,64,136,90,97,107,73,126,67,145,72,167,85,188,101,207,97,211,81,191,67,169,61,145,69,122,94,102,135,85,234,58"/>
-<area shape="rect" href="easynav__octomap__maps__manager_2include_2easynav__octomap__maps__manager_2filters_2InflationFilter_8hpp.html" title=" " alt="" coords="446,124,661,165"/>
-<area shape="poly" title=" " alt="" coords="416,74,500,114,498,119,414,79"/>
-<area shape="rect" title=" " alt="" coords="835,124,963,165"/>
-<area shape="poly" title=" " alt="" coords="451,56,623,85,817,121,821,122,820,127,816,127,623,91,451,62"/>
-<area shape="poly" title=" " alt="" coords="446,168,350,190,309,202,280,215,256,233,234,255,200,298,196,294,230,251,252,229,278,210,307,197,348,185,445,163"/>
-<area shape="poly" title=" " alt="" coords="557,165,564,207,571,230,581,252,597,272,617,290,613,294,594,276,577,255,566,232,559,208,552,165"/>
-<area shape="poly" title=" " alt="" coords="456,168,200,219,199,214,455,163"/>
-<area shape="rect" title=" " alt="" coords="590,220,760,246"/>
-<area shape="poly" title=" " alt="" coords="583,163,647,209,644,213,580,167"/>
-<area shape="rect" href="OctomapFilter_8hpp.html" title=" " alt="" coords="291,213,515,253"/>
-<area shape="poly" title=" " alt="" coords="521,167,451,207,449,203,518,163"/>
-<area shape="poly" title=" " alt="" coords="346,256,223,304,221,304,219,299,221,299,344,251"/>
-<area shape="poly" title=" " alt="" coords="462,251,587,293,586,299,460,256"/>
-<area shape="rect" title=" " alt="" coords="234,309,369,334"/>
-<area shape="poly" title=" " alt="" coords="382,256,329,301,325,297,378,252"/>
-<area shape="rect" title=" " alt="" coords="393,301,554,342"/>
-<area shape="poly" title=" " alt="" coords="421,252,450,288,446,291,417,256"/>
+<area shape="rect" title=" " alt="" coords="768,5,984,76"/>
+<area shape="rect" title=" " alt="" coords="5,309,59,334"/>
+<area shape="poly" title=" " alt="" coords="768,52,588,71,377,102,276,124,186,150,113,180,86,197,65,214,52,232,43,253,36,294,30,293,38,251,47,230,61,211,83,192,111,175,184,145,275,119,376,97,587,65,768,47"/>
+<area shape="rect" title=" " alt="" coords="765,132,987,157"/>
+<area shape="poly" title=" " alt="" coords="879,76,879,116,873,116,873,76"/>
+<area shape="rect" title=" " alt="" coords="1011,132,1256,157"/>
+<area shape="poly" title=" " alt="" coords="965,74,1089,123,1087,128,963,79"/>
+<area shape="rect" title=" " alt="" coords="550,301,711,342"/>
+<area shape="poly" title=" " alt="" coords="812,79,782,100,755,126,735,158,725,188,717,219,698,255,666,292,662,289,694,252,712,217,720,186,730,156,751,122,778,96,809,74"/>
+<area shape="rect" title=" " alt="" coords="1280,124,1437,165"/>
+<area shape="poly" title=" " alt="" coords="985,62,1266,121,1265,126,984,67"/>
+<area shape="rect" title=" " alt="" coords="1461,124,1619,165"/>
+<area shape="poly" title=" " alt="" coords="984,53,1194,81,1447,121,1446,126,1194,86,984,58"/>
+<area shape="rect" href="octomap_8hpp.html" title="Includes octomap/octomap.h without its &lt;ciso646&gt; C++20 warning." alt="" coords="360,301,525,342"/>
+<area shape="poly" title=" " alt="" coords="802,79,763,101,726,126,689,160,666,191,641,223,603,256,563,279,521,298,518,293,560,274,600,251,637,219,661,188,685,156,722,122,760,96,800,74"/>
+<area shape="rect" href="easynav__octomap__maps__manager_2include_2easynav__octomap__maps__manager_2filters_2InflationFilter_8hpp.html" title=" " alt="" coords="335,124,550,165"/>
+<area shape="poly" title=" " alt="" coords="768,70,542,123,541,117,767,65"/>
+<area shape="rect" title=" " alt="" coords="1643,124,1770,165"/>
+<area shape="poly" title=" " alt="" coords="984,46,1272,72,1448,93,1628,121,1627,126,1447,99,1271,77,984,52"/>
+<area shape="rect" title=" " alt="" coords="375,390,510,416"/>
+<area shape="poly" title=" " alt="" coords="445,342,445,374,440,374,440,342"/>
+<area shape="poly" title=" " alt="" coords="335,150,280,156,221,168,163,187,109,215,89,232,71,253,45,296,41,293,66,250,85,228,107,210,161,182,220,163,279,151,334,145"/>
+<area shape="poly" title=" " alt="" coords="528,163,568,182,603,211,615,228,623,247,632,285,626,286,618,249,610,231,599,214,565,187,525,168"/>
+<area shape="poly" title=" " alt="" coords="432,166,420,188,411,213,407,233,411,253,424,287,419,289,405,254,402,233,405,212,415,186,427,164"/>
+<area shape="rect" title=" " alt="" coords="419,220,589,246"/>
+<area shape="poly" title=" " alt="" coords="459,164,489,206,485,209,454,167"/>
+<area shape="rect" href="OctomapFilter_8hpp.html" title=" " alt="" coords="120,213,344,253"/>
+<area shape="poly" title=" " alt="" coords="396,168,295,209,293,204,394,163"/>
+<area shape="poly" title=" " alt="" coords="184,256,72,304,71,304,69,299,70,299,182,251"/>
+<area shape="poly" title=" " alt="" coords="324,251,535,297,534,302,322,257"/>
+<area shape="poly" title=" " alt="" coords="281,251,382,293,380,298,279,256"/>
+<area shape="rect" title=" " alt="" coords="82,309,150,334"/>
+<area shape="poly" title=" " alt="" coords="207,256,145,302,142,298,204,252"/>
+<area shape="rect" title=" " alt="" coords="174,301,335,342"/>
+<area shape="poly" title=" " alt="" coords="240,253,248,286,243,287,235,255"/>
 </map>
 </div>
 </div><table class="memberdecls">

@@ -104,12 +104,15 @@ Directory dependency graph for easynav_navmap_planner:</div>
 <div class="dyncontent">
 <div class="center"><img src="dir_db2f5015239ad27e3bfa6b159a1302c4_dep.png" border="0" usemap="#adir__db2f5015239ad27e3bfa6b159a1302c4__dep" loading="lazy" alt="planners/easynav_navmap_planner"/></div>
 <map name="adir__db2f5015239ad27e3bfa6b159a1302c4__dep" id="adir__db2f5015239ad27e3bfa6b159a1302c4__dep">
-<area shape="rect" href="dir_9bc712930bdaf11d9bc0d169deea35f3.html" title="include" alt="" coords="210,137,272,162"/>
+<area shape="rect" href="dir_9bc712930bdaf11d9bc0d169deea35f3.html" title="include" alt="" coords="253,137,315,162"/>
 <area shape="rect" href="dir_952cb76f4ef2ab68215897c292924753.html" title="src" alt="" coords="232,63,272,89"/>
-<area shape="poly" href="dir_000101_000080.html" alt="" coords="253,89,248,122,243,121,248,88"/>
-<area shape="rect" href="dir_000101_000080.html" title="1" alt="" coords="251,112,258,127"/>
-<area shape="rect" href="dir_db2f5015239ad27e3bfa6b159a1302c4.html" alt="" coords="27,52,283,173"/>
-<area shape="rect" href="dir_e5c1b1d8bab0718c16d961f31ff6f438.html" title="planners" alt="" coords="16,16,293,184"/>
+<area shape="poly" href="dir_000141_000107.html" alt="" coords="260,88,275,121,270,123,255,90"/>
+<area shape="rect" href="dir_000141_000107.html" title="1" alt="" coords="275,109,282,124"/>
+<area shape="rect" href="dir_cdaeafa7fb936fdaf3fce92d5cea0dea.html" title="tests" alt="" coords="296,63,346,89"/>
+<area shape="poly" href="dir_000164_000107.html" alt="" coords="318,90,300,124,295,122,313,88"/>
+<area shape="rect" href="dir_000164_000107.html" title="3" alt="" coords="303,117,310,132"/>
+<area shape="rect" href="dir_db2f5015239ad27e3bfa6b159a1302c4.html" alt="" coords="27,52,357,173"/>
+<area shape="rect" href="dir_e5c1b1d8bab0718c16d961f31ff6f438.html" title="planners" alt="" coords="16,16,368,184"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -117,19 +120,22 @@ Directory dependency graph for easynav_navmap_planner:</div>
 Directories</h2></td></tr>
 <tr class="memitem:include" id="r_include"><td class="memItemLeft"><span class="iconfolder"><div class="folder-icon"></div></span>&#160;</td><td class="memItemRight"><a class="el" href="dir_9bc712930bdaf11d9bc0d169deea35f3.html">include</a></td></tr>
 <tr class="memitem:src" id="r_src"><td class="memItemLeft"><span class="iconfolder"><div class="folder-icon"></div></span>&#160;</td><td class="memItemRight"><a class="el" href="dir_952cb76f4ef2ab68215897c292924753.html">src</a></td></tr>
+<tr class="memitem:tests" id="r_tests"><td class="memItemLeft"><span class="iconfolder"><div class="folder-icon"></div></span>&#160;</td><td class="memItemRight"><a class="el" href="dir_cdaeafa7fb936fdaf3fce92d5cea0dea.html">tests</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><h1 class="doxsection"><a class="anchor" id="autotoc_md213"></a>
+<div class="textblock"><h1 class="doxsection"><a class="anchor" id="autotoc_md276"></a>
 easynav_navmap_planner</h1>
 <p>"" "![ROS 2: humble](https://img.shields.io/badge/ROS%202-humble-blue)" "" "![ROS 2: jazzy](https://img.shields.io/badge/ROS%202-jazzy-blue)" "" "![ROS 2: kilted](https://img.shields.io/badge/ROS%202-kilted-blue)" "" "![ROS 2: rolling](https://img.shields.io/badge/ROS%202-rolling-blue)"</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md214"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md277"></a>
 Description</h1>
 <p><b>A*</b> path planner operating over a <span class="tt">NavMap</span> triangular mesh. <br  />
  The planner computes the <b>minimum-cost path</b> between the robot and the goal, taking into account both the geometric distance between triangles and the cost values stored in a selected NavMap layer (typically <span class="tt">"inflated_obstacles"</span>).</p>
-<p>Instead of simply avoiding non-free NavCels, the planner integrates their cost values (0–255) into the path evaluation. Cells marked as <span class="tt">LETHAL_OBSTACLE</span> or <span class="tt">NO_INFORMATION</span> are considered non-traversable, while inflated or inscribed cells are allowed but penalized proportionally to their cost. <br  />
+<p>Instead of simply avoiding non-free NavCels, the planner integrates their cost values (0–255) into the path evaluation. Cells marked as <span class="tt">LETHAL_OBSTACLE</span>, <span class="tt">NO_INFORMATION</span> or inscribed (<span class="tt">INSCRIBED_INFLATED_OBSTACLE</span>) are non-traversable (inscribed ones only near the start, so a robot inside that band can leave it), while inflated cells are allowed but penalized proportionally to their cost. <br  />
+</p>
+<p>The search moves between NavCels that share a vertex, not only an edge, so no direction is favored by how the mesh is split; a move through a shared vertex is only taken when every NavCel around that vertex is traversable, so the path never slips between two obstacles that touch at a corner. Then the path is shortened by line of sight: from each waypoint it goes straight to the farthest one whose segment crosses only traversable NavCels no costlier than the waypoints it replaces, and the result is resampled at the NavCel spacing on the surface. The path ends exactly at the goal. <br  />
 </p>
 <p>This enables smoother and safer trajectories that still respect proximity constraints imposed by obstacle inflation.</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md215"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md278"></a>
 Cost model</h2>
 <p>For two neighboring NavCels <span class="tt">u</span> and <span class="tt">v</span>, the edge cost is computed as:</p>
 <p>[ \text{cost}(u,v) = d(u,v) \times \left(\text{cost_factor} + \text{inflation_penalty} \times \frac{c(v)}{253}\right) ]</p>
@@ -139,27 +145,29 @@ Cost model</h2>
 <li>cells near obstacles (high cost) are traversed only if geometrically necessary,</li>
 <li>lethal (<span class="tt">254</span>) and unknown (<span class="tt">255</span>) cells are not traversable.</li>
 </ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md216"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md279"></a>
 Authors and Maintainers</h1>
 <ul>
 <li><b>Authors:</b> Intelligent Robotics Lab</li>
 <li><b>Maintainers:</b> Francisco Martín Rico <a href="mai'+'lto:+'fmr'+'ic'+'o@g'+'ma'+'il.'+'co'+'m'">fmric<span class="obfuscator">.nosp@m.</span>o@gm<span class="obfuscator">.nosp@m.</span>ail.c<span class="obfuscator">.nosp@m.</span>om</a></li>
 </ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md217"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md280"></a>
 Supported ROS 2 Distributions</h1>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Distribution  </th><th class="markdownTableHeadNone">Status  </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">humble  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/humble-supported-brightgreen" alt="kilted" class="inline"/>  </td></tr>
+<td class="markdownTableBodyNone">humble  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/humble-supported-brightgreen" alt="humble" class="inline"/>  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">jazzy  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/jazzy-supported-brightgreen" alt="kilted" class="inline"/>  </td></tr>
+<td class="markdownTableBodyNone">jazzy  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/jazzy-supported-brightgreen" alt="jazzy" class="inline"/>  </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">kilted  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/kilted-supported-brightgreen" alt="kilted" class="inline"/>  </td></tr>
 <tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">lyrical  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/lyrical-supported-brightgreen" alt="lyrical" class="inline"/>  </td></tr>
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">rolling  </td><td class="markdownTableBodyNone"><img src="https://img.shields.io/badge/rolling-supported-brightgreen" alt="rolling" class="inline"/>  </td></tr>
 </table>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md218"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md281"></a>
 Plugin (pluginlib)</h1>
 <ul>
 <li><b>Plugin Name:</b> <span class="tt">easynav_navmap_planner/AStarPlanner</span></li>
@@ -168,7 +176,7 @@ Plugin (pluginlib)</h1>
 <li><b>Library:</b> <span class="tt">easynav_navmap_planner</span></li>
 <li><b>Description:</b> A* path planner over a NavMap triangular mesh using per-cell costs to compute the shortest safe path.</li>
 </ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md219"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md282"></a>
 Parameters</h1>
 <p>All parameters are declared under the plugin namespace, i.e. <br  />
  <span class="tt">/&lt;node_fqn&gt;/easynav_navmap_planner/AStarPlanner/...</span></p>
@@ -178,12 +186,29 @@ Parameters</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.cost_factor</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">2.0</span>  </td><td class="markdownTableBodyNone">Multiplicative weight for geometric distance; values &gt; 1 increase the relative importance of distance.  </td></tr>
 <tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.cost_weight</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">5.0</span>  </td><td class="markdownTableBodyNone">Weight of the cell cost (inflation) against the path length; higher values keep paths farther from obstacles.  </td></tr>
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.continuous_replan</span>  </td><td class="markdownTableBodyNone"><span class="tt">bool</span>  </td><td class="markdownTableBodyRight"><span class="tt">true</span>  </td><td class="markdownTableBodyNone">If true, recomputes the path whenever <span class="tt">NavState</span> updates; if false, plans once per goal.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.terrain.slope_weight</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">0.0</span>  </td><td class="markdownTableBodyNone">Extra cost per meter on a sloped NavCel: <span class="tt">slope_weight * tan²(slope)</span>, up, down or across. Gentle slopes cost little and steep ones a lot: with <span class="tt">20</span>, 5° adds 0.15 per meter, 10° 0.6, 20° 2.6 and 30° 6.7 (the flat costs <span class="tt">cost_factor</span>, 2). <span class="tt">0</span> ignores the slope.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.terrain.max_slope_deg</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">90.0</span>  </td><td class="markdownTableBodyNone">NavCels steeper than this are not traversable.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.terrain.max_step</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">0.0</span>  </td><td class="markdownTableBodyNone"><span class="tt">&gt; 0</span>: NavCels with a larger height step around them (m) are not traversable.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.terrain.max_roughness</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">0.0</span>  </td><td class="markdownTableBodyNone"><span class="tt">&gt; 0</span>: NavCels rougher than this (RMS distance to the local plane, m) are not traversable.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.terrain.min_clearance</span>  </td><td class="markdownTableBodyNone"><span class="tt">double</span>  </td><td class="markdownTableBodyRight"><span class="tt">0.0</span>  </td><td class="markdownTableBodyNone"><span class="tt">&gt; 0</span>: NavCels with less free height above (to the next surface of the map, m) are not traversable; e.g. the robot's height.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.links.enabled</span>  </td><td class="markdownTableBodyNone"><span class="tt">bool</span>  </td><td class="markdownTableBodyRight"><span class="tt">true</span>  </td><td class="markdownTableBodyNone">Take the links between surfaces of the map (<span class="tt">navmap::SurfaceLink</span>).  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><span class="tt">&lt;plugin&gt;.links.types</span>  </td><td class="markdownTableBodyNone"><span class="tt">list&lt;string&gt;</span>  </td><td class="markdownTableBodyRight"><span class="tt">[generic, ramp, door]</span>  </td><td class="markdownTableBodyNone">Kinds of link the robot can take: <span class="tt">generic</span>, <span class="tt">ramp</span>, <span class="tt">stairs</span>, <span class="tt">elevator</span>, <span class="tt">door</span>.  </td></tr>
 </table>
-<p><b>Note:</b> The planner internally uses hardcoded values for <span class="tt">layer_name</span> (prefers <span class="tt">"inflated_obstacles"</span>, fallback to <span class="tt">"obstacles"</span>), <span class="tt">inflation_penalty</span> (value used in cost calculation), <span class="tt">cost_axial</span>, and <span class="tt">cost_diagonal</span>. These are not runtime-configurable parameters.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md220"></a>
+<p>The terrain limits use the NavMap descriptors (<span class="tt">navmap::compute_descriptors</span>), computed once per map geometry: a few tens of ms on maps of tens of thousands of NavCels (more if the map is rebuilt continuously, as in the maps manager's local mode). The line-of-sight shortcut never replaces part of the path by a steeper or costlier straight segment, and never cuts across a link.</p>
+<p><b>Note:</b> The planner internally uses hardcoded values for <span class="tt">layer_name</span> (prefers <span class="tt">"inflated_obstacles"</span>, fallback to <span class="tt">"obstacles"</span>), <span class="tt">cost_axial</span>, and <span class="tt">cost_diagonal</span>. These are not runtime-configurable parameters.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md283"></a>
 Interfaces (Topics and Services)</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md221"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md284"></a>
 Publications</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -192,7 +217,7 @@ Publications</h2>
 <td class="markdownTableBodyNone">Publisher  </td><td class="markdownTableBodyNone"><span class="tt">&lt;node_fqn&gt;/&lt;plugin&gt;/path</span>  </td><td class="markdownTableBodyNone"><span class="tt">nav_msgs/msg/Path</span>  </td><td class="markdownTableBodyNone">Publishes the computed A* path.  </td><td class="markdownTableBodyNone">depth=10  </td></tr>
 </table>
 <p>This plugin does not create subscriptions or services directly; it retrieves all inputs from <span class="tt">NavState</span>.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md222"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md285"></a>
 NavState Keys</h1>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -206,10 +231,10 @@ NavState Keys</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><span class="tt">path</span>  </td><td class="markdownTableBodyNone"><span class="tt">nav_msgs::msg::Path</span>  </td><td class="markdownTableBodyNone"><b>Write</b>  </td><td class="markdownTableBodyNone">Output path, computed as the lowest-cost route.  </td></tr>
 </table>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md223"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md286"></a>
 TF Frames</h1>
 <p>The planner assumes frame consistency between NavMap, robot pose, and goals. No TF lookups are performed internally.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md224"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md287"></a>
 License</h1>
 <p>Apache-2.0 </p>
 </div></div><!-- contents -->
